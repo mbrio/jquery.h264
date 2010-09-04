@@ -1,0 +1,39 @@
+<!DOCTYPE html> 
+<html class="no-js" xmlns="http://www.w3.org/1999/xhtml"> 
+	<head>
+		<meta charset="utf-8" /> 
+		<!--[if IE]><![endif]--> 
+ 
+		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+		<title>Video Test</title>
+	</head> 
+	<body>
+		
+		<div id="VideoContainer">
+			<span class="error-message" style="display:none">You do not have a version of Flash that supports this video.</span>
+		</div>
+		
+		<script src='http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js'></script>
+		<script src='../js/jquery.h264.js'></script>
+
+		<script>
+			$(function() {
+				$("#VideoContainer").h264({
+					url: "video.m4v",
+					poster: "poster.jpg"
+				}, {
+					width: 480,
+					height: 272,
+					failure: function() {
+						$("#VideoContainer > .error-message").css('display', 'inline');
+					}
+				}, {
+					flashPlayer: "player.swf",
+					flashVars: {
+						controlbar: "over"
+					}
+				});
+			});
+		</script> 
+	</body> 
+</html>
