@@ -18,21 +18,29 @@
 
 		<script>
 			$(function() {
-				$("#VideoContainer").h264({
-					url: "video.m4v",
-					poster: "poster.jpg"
-				}, {
+				var params = {
+					src: "video.m4v",
+					poster: "poster.jpg",
 					width: 480,
-					height: 272,
+					height: 272
+				};
+				
+				var flparams = {
+					src: "player.swf",
+					flashvars: {
+						file: "video.m4v",
+						image: "poster.jpg",
+						controlbar: "over"
+					}
+				};
+				
+				var callbacks = {
 					failure: function() {
 						$("#VideoContainer > .error-message").css('display', 'inline');
 					}
-				}, {
-					flashPlayer: "player.swf",
-					flashVars: {
-						controlbar: "over"
-					}
-				});
+				};
+				
+				$("#VideoContainer").h264(params, flparams, callbacks);
 			});
 		</script> 
 	</body> 

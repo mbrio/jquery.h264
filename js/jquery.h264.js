@@ -7,33 +7,42 @@
  *
  * The current version supports only JW Player as the video player
  * 
- * jQuery.fn.h264(url, params, flparams)
- * 
- *    @url = {
- *    	url = The video file URL
- *    	poster = The poster image URL
- *    }
+ * jQuery.fn.h264(params, flparams, callbacks)
  *    
- *    @params = {
+ *    @params = The HTML 5 video tag parameters
+ *    {
+ *    	src = The video file URL
+ *    	poster = The poster image URL
+ *    	preload = One of the following values 'none', 'metadata', 'auto'
+ *    	autoplay = Whether to begin the video on startup
+ *    	loop = Whether to loop the video
+ *    	controls = Whether to display the controls
  *    	width = The width of the video
  *    	height = The height of the video
- *    	autoplay = Whether to begin the video on startup
+ *    }
+ *    
+ *    @flparams = The Flash parameters
+ *    {
+ *    	src = The flash player URL
+ *    	version = An array containing the version number, example: [9,0,24]
+ *    	expressInstall = The express install URL
+ *    	w3c = Use standards based markup
+ *    	cachebusting = Prevents caching of the Flash file
+ *    	bgcolor = The background color of the Flash file
+ *    	width = The width of the video
+ *    	height = The height of the video
+ *    	wmode = The wmode of the flash player
+ *    	allowfullscreen = Allow the flash video to support fullscreen
+ *    	allowscriptaccess = Allow script access
+ *    	quality = The flash quality
+ *    	flashvars = The flashvars to pass onto the flash player
+ *    }
+ *
+ *    @callbacks = Functions to call at specific times
+ *    {
  *    	complete = A callback on complete
  *    	success = A callback on success
  *    	failure = A callback on failure
- *    }
- *    
- *    @flparams = {
- *    	version = An array of version data, example = [9,0,0]
- *    	flashPlayer = The flash player URL
- *    	expressInstall = The express install URL
- *    	flashVars = The flashvars to pass onto the flash player
- *    	params = {
- *    	    quality = The flash quality
- *    	    allowFullScreen = Allow the flash video to support fullscreen
- *    	    allowScriptAccess = Allow script access
- *    	    wmode = The window mode of flash
- *    	}
  *    }
  *
  */
@@ -50,93 +59,72 @@
 		}
 	};
 
-	$.fn.h264HTML5_ = function(url, params) {
-		var atts = {
-            width: params.width,
-            height: params.height,
-            controls: "controls",
-			preload: "none"
-        };
-
-		if (url.poster != null) atts.poster = url.poster;
-		if (params.autoplay == true) atts.autoplay = "autoplay";
-
-		var vid = jQuery("<video>").attr(atts);
-
-        vid.append(jQuery("<source>").attr({
-            src: url.url,
-            type: 'video/mp4; codecs="avc1.42E01E, mp4a.40.2"'
-        }));
+	$.fn.h264HTML5_ = function(params, flparams, callbacks) {
+		var vid = jQuery("<video>").attr(params);
 	
 		this.empty();
 		this.append(vid);
 		
-		if ($.isFunction(params.success)) params.success(this);
+		if ($.isFunction(callbacks.success)) callbacks.success(this);
 	};
 	
-	$.fn.h264Flash_ = function(url, params, flparams) {		
-		var flashVars = $.extend({
-            file: url.url
-        }, flparams.flashVars);
-
-		if (url.poster != null) flashVars.image = url.poster;
-		if (params.autoplay == true) flashVars.autostart = params.autoplay;
-
-        var flashParams = $.extend({
-            quality: "high",
-            allowFullScreen: "true",
-            allowScriptAccess: "always",
-            wmode: "opaque"
-        }, flparams.params);
-		
+	$.fn.h264Flash_ = function(params, flparams, callbacks) {
 		var failed = false;
-		this.flashembed({
-			src: flparams.flashPlayer,
-			width: params.width,
-			height: params.height,
-			version: flparams.version,
-			expressInstall: flparams.expressInstall,
-			wmode: flashParams.wmode,
-			quality: flashParams.quality,
-			allowfullscreen: flashParams.allowFullScreen,
-            allowscriptaccess: flashParams.allowScriptAccess,
-			onFail: function() { failed = true; }
-		}, flashVars);
+		var flashvars = flparams.flashvars;
+		flparams.flashvars = null;
 		
-		if (failed && $.isFunction(params.failure)) params.failure(this);
-		if (!failed && $.isFunction(params.success)) params.success(this);
+		flparams = $.extend({
+			onFail: function() { failed = true; }
+		}, flparams);
+		
+		this.flashembed(flparams, flashvars);
+
+		if (failed && $.isFunction(callbacks.failure)) callbacks.failure(this);
+		if (!failed && $.isFunction(callbacks.success)) callbacks.success(this);
 	};
 	
 	if ($.h264.useVideoTag()) $.fn.h264_ = $.fn.h264HTML5_;
     else $.fn.h264_ = $.fn.h264Flash_;
 	
-	$.fn.h264 = function(url, params, flparams) {
-		if (!$.isPlainObject(url)) url = { url: url };
-		
-		url = $.extend({
-			url: null,
-			poster: null
-		}, url);
+	$.fn.h264 = function(params, flparams, callbacks) {
+		if (!$.isPlainObject(params)) params = { src: params };
+		if (!$.isPlainObject(callbacks)) callbacks = { complete: callbacks };
 		
 		params = $.extend({
-			width: 640,
-			height: 480,
+			src: null,
+			poster: null,
+			preload: 'none',
 			autoplay: null,
-			complete: null,
-			success: null,
-			failure: null
+			loop: null,
+			controls: 'controls',
+			width: '100%',
+			height: '100%'
 		}, params);
 		
 		flparams = $.extend({
+			src: null,
 			version: [9],
-			flashPlayer: null,
 			expressInstall: null,
-			flashVars: null,
-			params: null
+			w3c: false,
+			cachebusting: false,
+			bgcolor: null,
+			width: params.width,
+			height: params.height,
+			wmode: 'opaque',
+			allowfullscreen: true,
+            allowscriptaccess: 'always',
+			quality: 'high',
+			flashvars: {}
 		}, flparams);
 		
-		this.h264_(url, params, flparams);
+		callbacks = $.extend({
+			complete: null,
+			success: null,
+			failure: null
+		}, callbacks);
 		
-		if ($.isFunction(params.complete)) params.complete(this);
+		this.h264_(params, flparams, callbacks);
+		
+		if ($.isFunction(callbacks.complete)) callbacks.complete(this);
 	};
 })(jQuery);
