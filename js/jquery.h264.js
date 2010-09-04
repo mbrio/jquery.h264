@@ -56,14 +56,42 @@
 		useVideoTag: function() {
 			var obj = document.createElement("video");
 			return (typeof(obj.canPlayType) !== 'undefined' && obj.canPlayType('video/mp4; codecs="avc1.42E01E"'));
+		},
+		isMobile: function() {
+			var ua = navigator.userAgent.toLowerCase();
+			var a = ["iphone","ipod","ipad","android"];
+			var l = a.length;
+
+			for(var x = 0; x < l; x++) {
+				if(ua.search(a[x]) > -1) return true;
+			}
+			
+			return false;
 		}
 	};
 
 	$.fn.h264HTML5_ = function(params, flparams, callbacks) {
-		var vid = jQuery("<video>").attr(params);
-	
+		var ele = null;
+		
+		if (params.poster && !params.autoplay && !$.h264.isMobile()) {
+			var play = $("<div>").addClass("jquery-h264-play");
+			ele = $("<div>").css({
+				width: params.width,
+				height: params.height,
+				"background": "transparent url(" + params.poster + ") no-repeat",
+				cursor: "pointer",
+				position: "relative"
+			}).addClass("jquery-h264-poster").click(function() {
+				var vid = $("<video>").attr(params).addClass("jquery-h264-video");
+				$(this).replaceWith(vid);
+				vid.get(0).play();
+			}).append(play);
+		} else {
+			ele = $("<video>").attr(params).addClass("jquery-h264-video");
+		}
+		
 		this.empty();
-		this.append(vid);
+		this.append(ele);
 		
 		if ($.isFunction(callbacks.success)) callbacks.success(this);
 	};
