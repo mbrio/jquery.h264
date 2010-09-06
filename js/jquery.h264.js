@@ -52,16 +52,26 @@
 	$.h264 = {
 		version: '1.0',
 		useVideoTag: function() {
-			var obj = document.createElement("video");
-			return (typeof(obj.canPlayType) !== 'undefined' && obj.canPlayType('video/mp4; codecs="avc1.42E01E"'));
-		}
+			if (!$.h264.cache_['useVideoTag']) {
+				var obj = document.createElement("video");
+				$.h264.cache_.useVideoTag = !!(typeof(obj.canPlayType) !== 'undefined' && obj.canPlayType('video/mp4; codecs="avc1.42E01E"'));
+			}
+			
+			return $.h264.cache_.useVideoTag;
+		},
+		cache_: {}
 	};
 	
 	var supportsCustomControls = function() {
-		var query = /iphone|ipod|ipad|android/i;
+		if (supportsCustomControls.cache_ === null) {
+			var query = /iphone|ipod|ipad|android/i;
+
+			supportsCustomControls.cache_ = navigator.userAgent.search(query) === -1;
+		}
 		
-		return navigator.userAgent.search(query) === -1;
+		return supportsCustomControls.cache_;
 	}
+	supportsCustomControls.cache_ = null;
 	
 	var VideoPlayer = function vp(ele, params, callbacks) {
 		if (!(this instanceof arguments.callee)) return new vp(ele, params, callbacks);
@@ -94,7 +104,7 @@
 		var ele = this.video = $("<video>").attr(params).addClass("jquery-h264-video");
 		this.videoElement = this.video.get(0);
 		
-		if (params.poster && !params.autoplay) {
+		if (supportsCustomControls() && params.poster && !params.autoplay) {
 			var play = $("<div>").addClass("jquery-h264-poster-play");
 			ele = this.posterImage = $("<div>").css({
 				width: params.width,
