@@ -4,8 +4,6 @@
  *
  * Copyright (c) 2010 Michael Diolosa - http://github.com/mbrio
  * Dual-licensed under the GPL and MIT licenses.
- *
- * The current version supports only JW Player as the video player
  * 
  * jQuery.fn.h264(params, flparams, callbacks)
  *    
