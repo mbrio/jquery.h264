@@ -56,66 +56,110 @@
 		useVideoTag: function() {
 			var obj = document.createElement("video");
 			return (typeof(obj.canPlayType) !== 'undefined' && obj.canPlayType('video/mp4; codecs="avc1.42E01E"'));
-		},
-		isMobile: function() {
-			var ua = navigator.userAgent.toLowerCase();
-			var a = ["iphone","ipod","android"];
-			var l = a.length;
-
-			for(var x = 0; x < l; x++) {
-				if(ua.search(a[x]) > -1) return true;
-			}
-			
-			return false;
 		}
 	};
 	
-	var VideoPlayer = function(video, controls) {
+	var supportsCustomControls = function() {
+		var query = /iphone|ipod|ipad|android/i;
+		
+		return navigator.userAgent.search(query) === -1;
+	}
+	
+	var VideoPlayer = function vp(ele, params, callbacks) {
+		if (!(this instanceof arguments.callee)) return new vp(ele, params, callbacks);
+		
 		this.percentComplete = 0;
 		this.percentLoaded = 0;
 		
-		this.videoElement = video.get(0);
-		this.video = video;
+		this.element = ele;
 		
-		this.controlsElement = controls.get(0);
-		this.controls = controls;
-		
-		this.playButton = this.controls.find(".jquery-h264-play-button");
-		this.gutter = this.controls.find(".jquery-h264-gutter");
-		this.playhead = this.controls.find(".jquery-h264-playhead");
-		this.progress = this.controls.find(".jquery-h264-progress");
-		
-		this.init_();
+		init_.call(this, params);
 	}
 	
-	VideoPlayer.prototype.init_ = function() {		
-		this.playhead.css("width", 1);
+	var init_ = function(params) {
+		initVideo_.call(this, params);
+		initControls_.call(this, params);
+
+		this.videoContainer.append(this.controls);
 		
+		this.element.empty();
+		this.element.append(this.videoContainer);
+	}
+	
+	var initVideo_ = function(params) {
+		this.videoContainer = $("<div>").css({
+			width: params.width,
+			height: params.height,
+			position: 'relative'
+		}).addClass("jquery-h264-video-container");
 		
-		this.video.bind("timeupdate", $.proxy(this.updatePercentComplete_, this));
-		this.video.bind("progress", $.proxy(this.updatePercentLoaded_, this));
+		var ele = this.video = $("<video>").attr(params).addClass("jquery-h264-video");
+		this.videoElement = this.video.get(0);
 		
-		this.video.bind("play", $.proxy(this.displayPlaying_, this));
-		this.video.bind("pause", $.proxy(this.displayPaused_, this));
-		this.video.bind("ended", $.proxy(this.displayPaused_, this));
+		if (params.poster && !params.autoplay) {
+			var play = $("<div>").addClass("jquery-h264-poster-play");
+			ele = this.posterImage = $("<div>").css({
+				width: params.width,
+				height: params.height,
+				"background": "transparent url(" + params.poster + ") no-repeat",
+				cursor: "pointer",
+				position: "relative"
+			}).click((function(player) {
+				return function() {
+					$(this).replaceWith(player.video);
+					if (player.hasControls) player.controls.css("visibility", "visible");
+					player.play();
+				}
+			})(this)).addClass("jquery-h264-video-poster").append(play);
+		}
+		
+		this.videoContainer.append(ele);
+	}
+	
+	var initControls_ = function(params) {
+		this.hasControls = supportsCustomControls() && (this.controls = this.element.find(".jquery-h264-video-controls")).size() > 0;
+		
+		if (this.hasControls) {
+			this.controls.remove();
+			
+			if (this.posterImage) this.controls.css("visibility", "hidden");
+			
+			this.video.attr("controls", null);
+			
+			this.playButton = this.controls.find(".jquery-h264-play-button");
+			this.gutter = this.controls.find(".jquery-h264-gutter");
+			this.playhead = this.controls.find(".jquery-h264-playhead");
+			this.progress = this.controls.find(".jquery-h264-progress");
+			
+			this.playhead.css("width", 1);
+		
+			this.video.bind("timeupdate", $.proxy(updatePercentComplete_, this));
+			this.video.bind("progress", $.proxy(updatePercentLoaded_, this));
+		
+			this.video.bind("play", $.proxy(displayPlaying_, this));
+			this.video.bind("pause", $.proxy(displayPaused_, this));
+			this.video.bind("ended", $.proxy(displayPaused_, this));
 				
-		this.playButton.click($.proxy(this.togglePlay, this));
+			this.playButton.click($.proxy(this.togglePlay, this));
+		} else {
+			this.update = new Function();
+		}
 	}
 	
-	VideoPlayer.prototype.displayPlaying_ = function() {
-		this.controls.addClass("playing");
+	var displayPlaying_ = function() {
+		this.element.addClass("playing");
 	}
 	
-	VideoPlayer.prototype.displayPaused_ = function() {
-		this.controls.removeClass("playing");
+	var displayPaused_ = function() {
+		this.element.removeClass("playing");
 	}	
 	
-	VideoPlayer.prototype.updatePercentComplete_ = function() {
+	var updatePercentComplete_ = function() {
 		this.percentComplete = (this.videoElement.currentTime * 100 / this.videoElement.duration) / 100;
 		this.update();
 	}
 	
-	VideoPlayer.prototype.updatePercentLoaded_ = function() {
+	var updatePercentLoaded_ = function() {
 		this.percentLoaded = (this.videoElement.buffered.end() * 100 / this.videoElement.duration) / 100;
 		this.update();
 	}
@@ -126,7 +170,7 @@
 	}
 	
 	VideoPlayer.prototype.togglePlay = function() {
-		if (this.controls.hasClass("playing")) this.pause();
+		if (this.element.hasClass("playing")) this.pause();
 		else this.play();
 	}
 	
@@ -139,54 +183,11 @@
 	}
 
 	$.fn.h264HTML5_ = function(params, flparams, callbacks) {
-		var ele = null;
-		
-		var controls = this.find(".jquery-h264-video-controls");
-		if (controls.size() > 0) params.controls = null;
-		
-		if (params.poster && !params.autoplay && !$.h264.isMobile()) {
-			var play = $("<div>").addClass("jquery-h264-play");
-			ele = $("<div>").css({
-				width: params.width,
-				height: params.height,
-				"background": "transparent url(" + params.poster + ") no-repeat",
-				cursor: "pointer",
-				position: "relative"
-			}).addClass("jquery-h264-poster").click(function() {
-				var vid = $("<video>").attr(params).addClass("jquery-h264-video");
-				var player = new VideoPlayer(vid, controls);
-				
-				var videoContainer = $("<div>").css({
-					width: params.width,
-					height: params.height,
-					position: 'absolute'
-				}).mouseenter(function() {
-					controls.fadeIn(250);
-					player.update();
-				}).mouseleave(function() {
-					controls.fadeOut(250);
-					player.update();
-				});
-				
-				videoContainer.append(vid);
-				videoContainer.append(controls);
+		var obj = VideoPlayer(this, params)
 
-				$(this).replaceWith(videoContainer);
-				
-				/*
-					Found Safari 5 would not allow for playback immediately
-					therefore a timeout is necessary.
-				*/
-				setTimeout(function() {player.play()}, 100);
-			}).append(play);
-		} else {
-			ele = $("<video>").attr(params).addClass("jquery-h264-video");
-		}
-		
-		this.empty();
-		this.append(ele);
-		
 		if ($.isFunction(callbacks.success)) callbacks.success(this);
+		
+		return { isHTML5: true, player: obj };
 	};
 	
 	$.fn.h264Flash_ = function(params, flparams, callbacks) {
@@ -198,10 +199,12 @@
 			onFail: function() { failed = true; }
 		}, flparams);
 		
-		this.flashembed(flparams, flashvars);
+		var obj = this.flashembed(flparams, flashvars);
 
 		if (failed && $.isFunction(callbacks.failure)) callbacks.failure(this);
 		if (!failed && $.isFunction(callbacks.success)) callbacks.success(this);
+		
+		return { isHTML5: false, player: obj };
 	};
 	
 	if ($.h264.useVideoTag()) $.fn.h264_ = $.fn.h264HTML5_;
@@ -244,8 +247,10 @@
 			failure: null
 		}, callbacks);
 		
-		this.h264_(params, flparams, callbacks);
+		var obj = this.h264_(params, flparams, callbacks);
 		
 		if ($.isFunction(callbacks.complete)) callbacks.complete(this);
+		
+		return obj;
 	};
 })(jQuery);

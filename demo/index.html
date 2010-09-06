@@ -8,7 +8,7 @@
 		<title>Video Test</title>
 		
 		<style>
-			.jquery-h264-play {
+			.jquery-h264-poster-play {
 				height: 100%;
 				width: 100%;
 				background: transparent url(play.png) no-repeat center center;
@@ -80,6 +80,9 @@
 
 		<script>
 			$(function() {
+				/*
+					Parameters to pass to the video tag.
+				*/
 				var params = {
 					src: "video.m4v",
 					poster: "poster.jpg",
@@ -87,6 +90,10 @@
 					height: 272
 				};
 				
+				/*
+					Parameters to pass to flashembed, this controls your selection of
+					Flash player.
+				*/
 				var flparams = {
 					src: "player.swf",
 					flashvars: {
@@ -97,12 +104,28 @@
 				};
 				
 				var callbacks = {
+					/* We add a failure event handler that displays the error message */
 					failure: function() {
 						$("#VideoContainer > .error-message").css('display', 'inline');
 					}
 				};
 				
-				$("#VideoContainer").h264(params, flparams, callbacks);
+				/* Call h264 and receive an object that describes the results of the embedding */
+				var player = $("#VideoContainer").h264(params, flparams, callbacks);
+				
+				/*
+					Once the player has been created we can add some custom control code,
+					such as fading in and out the controls on mouseenter/mouseleave
+				*/
+				if (player.isHTML5) (function(player) {
+					player.videoContainer.mouseenter(function() {
+						player.controls.fadeIn(250);
+						player.update();
+					}).mouseleave(function() {
+						player.controls.fadeOut(250);
+						player.update();
+					});
+				})(player.player);
 			});
 		</script> 
 	</body> 
