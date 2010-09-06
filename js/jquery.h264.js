@@ -59,7 +59,7 @@
 		},
 		isMobile: function() {
 			var ua = navigator.userAgent.toLowerCase();
-			var a = ["iphone","ipod","ipad","android"];
+			var a = ["iphone","ipod","android"];
 			var l = a.length;
 
 			for(var x = 0; x < l; x++) {
@@ -69,9 +69,80 @@
 			return false;
 		}
 	};
+	
+	var VideoPlayer = function(video, controls) {
+		this.percentComplete = 0;
+		this.percentLoaded = 0;
+		
+		this.videoElement = video.get(0);
+		this.video = video;
+		
+		this.controlsElement = controls.get(0);
+		this.controls = controls;
+		
+		this.playButton = this.controls.find(".jquery-h264-play-button");
+		this.gutter = this.controls.find(".jquery-h264-gutter");
+		this.playhead = this.controls.find(".jquery-h264-playhead");
+		this.progress = this.controls.find(".jquery-h264-progress");
+		
+		this.init_();
+	}
+	
+	VideoPlayer.prototype.init_ = function() {		
+		this.playhead.css("width", 1);
+		
+		
+		this.video.bind("timeupdate", $.proxy(this.updatePercentComplete_, this));
+		this.video.bind("progress", $.proxy(this.updatePercentLoaded_, this));
+		
+		this.video.bind("play", $.proxy(this.displayPlaying_, this));
+		this.video.bind("pause", $.proxy(this.displayPaused_, this));
+		this.video.bind("ended", $.proxy(this.displayPaused_, this));
+				
+		this.playButton.click($.proxy(this.togglePlay, this));
+	}
+	
+	VideoPlayer.prototype.displayPlaying_ = function() {
+		this.controls.addClass("playing");
+	}
+	
+	VideoPlayer.prototype.displayPaused_ = function() {
+		this.controls.removeClass("playing");
+	}	
+	
+	VideoPlayer.prototype.updatePercentComplete_ = function() {
+		this.percentComplete = (this.videoElement.currentTime * 100 / this.videoElement.duration) / 100;
+		this.update();
+	}
+	
+	VideoPlayer.prototype.updatePercentLoaded_ = function() {
+		this.percentLoaded = (this.videoElement.buffered.end() * 100 / this.videoElement.duration) / 100;
+		this.update();
+	}
+	
+	VideoPlayer.prototype.update = function() {
+		this.playhead.css("width", this.gutter.width() * this.percentComplete);
+		this.progress.css("width", this.gutter.width() * this.percentLoaded);
+	}
+	
+	VideoPlayer.prototype.togglePlay = function() {
+		if (this.controls.hasClass("playing")) this.pause();
+		else this.play();
+	}
+	
+	VideoPlayer.prototype.play = function() {
+		this.videoElement.play();
+	}
+	
+	VideoPlayer.prototype.pause = function() {
+		this.videoElement.pause();
+	}
 
 	$.fn.h264HTML5_ = function(params, flparams, callbacks) {
 		var ele = null;
+		
+		var controls = this.find(".jquery-h264-video-controls");
+		if (controls.size() > 0) params.controls = null;
 		
 		if (params.poster && !params.autoplay && !$.h264.isMobile()) {
 			var play = $("<div>").addClass("jquery-h264-play");
@@ -83,8 +154,30 @@
 				position: "relative"
 			}).addClass("jquery-h264-poster").click(function() {
 				var vid = $("<video>").attr(params).addClass("jquery-h264-video");
-				$(this).replaceWith(vid);
-				vid.get(0).play();
+				var player = new VideoPlayer(vid, controls);
+				
+				var videoContainer = $("<div>").css({
+					width: params.width,
+					height: params.height,
+					position: 'absolute'
+				}).mouseenter(function() {
+					controls.fadeIn(250);
+					player.update();
+				}).mouseleave(function() {
+					controls.fadeOut(250);
+					player.update();
+				});
+				
+				videoContainer.append(vid);
+				videoContainer.append(controls);
+
+				$(this).replaceWith(videoContainer);
+				
+				/*
+					Found Safari 5 would not allow for playback immediately
+					therefore a timeout is necessary.
+				*/
+				setTimeout(function() {player.play()}, 100);
 			}).append(play);
 		} else {
 			ele = $("<video>").attr(params).addClass("jquery-h264-video");

@@ -13,12 +13,66 @@
 				width: 100%;
 				background: transparent url(play.png) no-repeat center center;
 			}
+			
+			.jquery-h264-video-controls {
+				position: absolute;
+				background: transparent url(controls/back.png) repeat-x;
+				height: 24px;
+				width: 100%;
+				bottom: 0px;
+				border-top: solid 1px #000;
+			}
+			
+			.jquery-h264-play-button {
+				position: absolute;
+				background: transparent url(controls/play.png) no-repeat;
+				height: 21px;
+				width: 19px;
+				left: 8px;
+				top: 1px;
+				cursor: pointer;
+			}
+			
+			.playing .jquery-h264-play-button {
+				background: transparent url(controls/pause.png) no-repeat;
+			}
+			
+			.jquery-h264-gutter-container {
+				margin-top: 3px;
+			}
+			
+			.jquery-h264-gutter {
+				background: transparent url(controls/gutter.png) repeat-x;
+				height: 17px;
+				margin: 0 10px 0 33px;
+			}
+			
+			.jquery-h264-playhead, .jquery-h264-progress {
+				position: absolute;
+				top: 3px;
+				left: 33px;
+				background: transparent url(controls/gutter.png) repeat-x 0px -17px;
+				height: 17px;
+				width: 1px;
+			}
+			
+			.jquery-h264-progress {
+				background: transparent url(controls/gutter.png) repeat-x 0px -34px;
+			}
 		</style>
 	</head> 
 	<body>
 		
 		<div id="VideoContainer">
 			<span class="error-message" style="display:none">You do not have a version of Flash that supports this video.</span>
+			<div class="jquery-h264-video-controls">
+				<div class="jquery-h264-play-button"></div>
+				<div class="jquery-h264-gutter-container">
+					<div class="jquery-h264-gutter"></div>
+					<div class="jquery-h264-progress"></div>
+					<div class="jquery-h264-playhead"></div>
+				</div>
+			</div>
 		</div>
 		
 		<script src='http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js'></script>
