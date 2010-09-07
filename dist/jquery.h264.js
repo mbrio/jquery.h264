@@ -5,7 +5,7 @@
  * Copyright (c) 2010 Michael Diolosa - http://github.com/mbrio
  * Dual-licensed under the GPL and MIT licenses.
  *
- * Date: Tue Sep 7 18:01:42 2010 -0400
+ * Date: Tue Sep 7 18:20:25 2010 -0400
  */
 (function($) {
 
@@ -490,12 +490,14 @@
 		else this.play();
 	}
 
-	VideoPlayer.prototype.play = function() {
+	VideoPlayer.prototype.play = function() {		
 		this.videoElement.play();
+		this.update();
 	}
 
 	VideoPlayer.prototype.pause = function() {
 		this.videoElement.pause();
+		this.update();
 	}
 		$.h264 = {
 		version: res.version

@@ -122,11 +122,13 @@
 		else this.play();
 	}
 
-	VideoPlayer.prototype.play = function() {
+	VideoPlayer.prototype.play = function() {		
 		this.videoElement.play();
+		this.update();
 	}
 
 	VideoPlayer.prototype.pause = function() {
 		this.videoElement.pause();
+		this.update();
 	}
 	
