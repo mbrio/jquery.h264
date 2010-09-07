@@ -95,7 +95,7 @@
 			
 			this.playButton.click($.proxy(this.togglePlay, this));
 			
-			$.isFunction(callbacks.update) && (this.update = callbacks.update);
+			$.isFunction(callbacks.videoUpdating) && (this.update = callbacks.videoUpdating);
 		}
 	}
 

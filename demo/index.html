@@ -108,13 +108,15 @@
 				
 				var callbacks = {
 					/* We add a failure event handler that displays the error message */
-					failure: function() {
+					failed: function() {
 						$("#VideoContainer > .error-message").css('display', 'inline');
 					},
+					
 					videoDisplayed: function() {
 						if (this.hasControls) this.controls.css("visibility", "visible");
 					},
-					update: function() {
+					
+					videoUpdating: function() {
 						this.playhead.css("width", this.gutter.width() * this.percentComplete);
 						this.progress.css("width", this.gutter.width() * this.percentLoaded);
 					}

@@ -5,7 +5,7 @@
  * Copyright (c) 2010 Michael Diolosa - http://github.com/mbrio
  * Dual-licensed under the GPL and MIT licenses.
  *
- * Date: Mon Sep 6 23:37:07 2010 -0400
+ * Date: Tue Sep 7 17:38:54 2010 -0400
  */
 (function($) {
 
@@ -463,7 +463,7 @@
 			
 			this.playButton.click($.proxy(this.togglePlay, this));
 			
-			$.isFunction(callbacks.update) && (this.update = callbacks.update);
+			$.isFunction(callbacks.videoUpdating) && (this.update = callbacks.videoUpdating);
 		}
 	}
 
@@ -506,7 +506,7 @@
 	$.fn.h264HTML5_ = function(params, flparams, callbacks) {
 		var result = VideoPlayer(this, params, callbacks)
 
-		$.isFunction(callbacks.success) && callbacks.success(this);
+		$.isFunction(callbacks.succeeded) && callbacks.succeeded.call(this);
 		
 		return { isHTML5: true, player: result };
 	};
@@ -527,8 +527,8 @@
 			var result = this.flashembed(flparams, flashvars);
 		}
 
-		$.isFunction(callbacks.failure) && callbacks.failure.call(this);
-		$.isFunction(callbacks.success) && callbacks.success.call(this);
+		$.isFunction(callbacks.failed) && callbacks.failed.call(this);
+		$.isFunction(callbacks.succeeded) && callbacks.succeeded.call(this);
 		
 		return { isHTML5: false, player: result };
 	};
@@ -538,7 +538,7 @@
 	
 	$.fn.h264 = function(params, flparams, callbacks) {
 		if (!$.isPlainObject(params)) params = { src: params };
-		if (!$.isPlainObject(callbacks)) callbacks = { complete: callbacks };
+		if (!$.isPlainObject(callbacks)) callbacks = { completed: callbacks };
 		
 		params = $.extend(def.params, params);
 		
@@ -551,7 +551,7 @@
 		
 		var result = this.h264_(params, flparams, callbacks);
 		
-		$.isFunction(callbacks.complete) && callbacks.complete.call(this);
+		$.isFunction(callbacks.completed) && callbacks.completed.call(this);
 		
 		return result;
 	};
