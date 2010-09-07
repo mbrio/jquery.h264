@@ -97,7 +97,7 @@ Parameters
 	
 Returns
 -------
-An object containing two properties; isHTML5 which is a boolean value, and player which contains a reference to the returned embedded object.
+An object containing two properties; `isHTML5` which is a boolean value, and `player` which contains a reference to the returned embedded object.
 
 If isHTML5 is true then player is an instance of VideoPlayer from within the jquery.h264.js file; if isHTML5 is false then the return value is from jQuery Tools flashembed.
 
