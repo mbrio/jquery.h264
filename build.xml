@@ -12,12 +12,12 @@
 	<target name="jquery-h264">
 		<mkdir dir="${dist}" />
 		<concat destfile="${OUTPUT}">
-			<fileset file="js/intro.js" />
-			<fileset file="js/flashembed.js" />
-			<fileset file="js/resources.js" />
-			<fileset file="js/video-player.js" />
-			<fileset file="js/core.js" />
-			<fileset file="js/outro.js" />
+			<fileset file="src/intro.js" />
+			<fileset file="src/flashembed.js" />
+			<fileset file="src/resources.js" />
+			<fileset file="src/video-player.js" />
+			<fileset file="src/core.js" />
+			<fileset file="src/outro.js" />
 		</concat>
 		<replaceregexp match="@VERSION" replace="${version}" flags="g" byline="true" file="${OUTPUT}" />
 		<exec executable="git" outputproperty="date">

@@ -63,43 +63,43 @@ In order to build jQuery h.264 you must have [Ant](http://www.google.com/search?
 
 Usage
 -----
-jQuery.fn.h264(params, flparams, callbacks)
+	jQuery.fn.h264(params, flparams, callbacks)
 
 Parameters
 ----------
-* @params = The HTML 5 video tag parameters
-	* src = The video file URL
-	* poster = The poster image URL
-	* preload = One of the following values 'none', 'metadata', 'auto'
-	* autoplay = Whether to begin the video on startup
-	* loop = Whether to loop the video
-	* controls = Whether to display the controls
-	* width = The width of the video
-	* height = The height of the video
-* @flparams = The Flash parameters
-	* src = The flash player URL
-	* version = An array containing the version number, example: [9,0,24]
-	* expressInstall = The express install URL
-	* w3c = Use standards based markup
-	* cachebusting = Prevents caching of the Flash file
-	* bgcolor = The background color of the Flash file
-	* width = The width of the video
-	* height = The height of the video
-	* wmode = The wmode of the flash player
-	* allowfullscreen = Allow the flash video to support fullscreen
-	* allowscriptaccess = Allow script access
-	* quality = The flash quality
-	* flashvars = The flashvars to pass onto the flash player
-* @callbacks = Functions to call at specific times
-	* complete = A callback on complete
-	* success = A callback on success
-	* failure = A callback on failure
+* `@params` = The HTML 5 video tag parameters
+	* `src` = The video file URL
+	* `poster` = The poster image URL
+	* `preload` = One of the following values 'none', 'metadata', 'auto'
+	* `autoplay` = Whether to begin the video on startup
+	* `loop` = Whether to loop the video
+	* `controls` = Whether to display the controls
+	* `width` = The width of the video
+	* `height` = The height of the video
+* `@flparams` = The Flash parameters
+	* `src` = The flash player URL
+	* `version` = An array containing the version number, example: [9,0,24]
+	* `expressInstall` = The express install URL
+	* `w3c` = Use standards based markup
+	* `cachebusting` = Prevents caching of the Flash file
+	* `bgcolor` = The background color of the Flash file
+	* `width` = The width of the video
+	* `height` = The height of the video
+	* `wmode` = The wmode of the flash player
+	* `allowfullscreen` = Allow the flash video to support fullscreen
+	* `allowscriptaccess` = Allow script access
+	* `quality` = The flash quality
+	* `flashvars` = The flashvars to pass onto the flash player
+* `@callbacks` = Functions to call at specific times
+	* `complete` = A callback on complete
+	* `success` = A callback on success
+	* `failure` = A callback on failure
 	
 Returns
 -------
 An object containing two properties; `isHTML5` which is a boolean value, and `player` which contains a reference to the returned embedded object.
 
-If isHTML5 is true then player is an instance of VideoPlayer from within the jquery.h264.js file; if isHTML5 is false then the return value is from jQuery Tools flashembed.
+If `isHTML5` is `true` then `player` is an instance of `VideoPlayer` from within the src/video-player.js file; if `isHTML5` is `false` then `player` is the result from jQuery Tools `flashembed`.
 
 	var player = $("#VideoContainer").h264(params, flparams, callbacks);
 	
