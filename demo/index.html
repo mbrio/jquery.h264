@@ -117,15 +117,19 @@
 					Once the player has been created we can add some custom control code,
 					such as fading in and out the controls on mouseenter/mouseleave
 				*/
-				if (player.isHTML5) (function(player) {
-					player.videoContainer.mouseenter(function() {
-						player.controls.fadeIn(250);
-						player.update();
-					}).mouseleave(function() {
-						player.controls.fadeOut(250);
-						player.update();
-					});
-				})(player.player);
+				(function(isHTML5, player) {
+					if (isHTML5) {
+						player.videoContainer.mouseenter(function() {
+							player.controls.fadeIn(250);
+							player.update();
+						}).mouseleave(function() {
+							player.controls.fadeOut(250);
+							player.update();
+						});
+					} else {
+						// Do some Flash coding here with the results from flashembed
+					}
+				})(player.isHTML5, player.player);
 			});
 		</script> 
 	</body> 

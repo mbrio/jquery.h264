@@ -3,11 +3,11 @@
 	}
 	
 	$.fn.h264HTML5_ = function(params, flparams, callbacks) {
-		var obj = VideoPlayer(this, params)
+		var result = VideoPlayer(this, params)
 
 		if ($.isFunction(callbacks.success)) callbacks.success(this);
 		
-		return { isHTML5: true, player: obj };
+		return { isHTML5: true, player: result };
 	};
 	
 	$.fn.h264Flash_ = function(params, flparams, callbacks) {
@@ -19,12 +19,12 @@
 			onFail: function() { failed = true; }
 		}, flparams);
 		
-		var obj = this.flashembed(flparams, flashvars);
+		var result = this.flashembed(flparams, flashvars);
 
 		if (failed && $.isFunction(callbacks.failure)) callbacks.failure(this);
 		if (!failed && $.isFunction(callbacks.success)) callbacks.success(this);
 		
-		return { isHTML5: false, player: obj };
+		return { isHTML5: false, player: result };
 	};
 	
 	if (useVideoTag_()) $.fn.h264_ = $.fn.h264HTML5_;
@@ -43,9 +43,9 @@
 		
 		callbacks = $.extend(def.callbacks, callbacks);
 		
-		var obj = this.h264_(params, flparams, callbacks);
+		var result = this.h264_(params, flparams, callbacks);
 		
 		if ($.isFunction(callbacks.complete)) callbacks.complete(this);
 		
-		return obj;
+		return result;
 	};

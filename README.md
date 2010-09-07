@@ -103,12 +103,16 @@ If `isHTML5` is `true` then `player` is an instance of `VideoPlayer` from within
 
 	var player = $("#VideoContainer").h264(params, flparams, callbacks);
 	
-	if (player.isHTML5) (function(player) {
-		player.videoContainer.mouseenter(function() {
-			player.controls.fadeIn(250);
-			player.update();
-		}).mouseleave(function() {
-			player.controls.fadeOut(250);
-			player.update();
-		});
-	})(player.player);
+	(function(isHTML5, player) {
+		if (isHTML5) {
+			player.videoContainer.mouseenter(function() {
+				player.controls.fadeIn(250);
+				player.update();
+			}).mouseleave(function() {
+				player.controls.fadeOut(250);
+				player.update();
+			});
+		} else {
+			// Do some Flash coding here with the results from flashembed
+		}
+	})(player.isHTML5, player.player);
