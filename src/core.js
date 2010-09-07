@@ -3,26 +3,31 @@
 	}
 	
 	$.fn.h264HTML5_ = function(params, flparams, callbacks) {
-		var result = VideoPlayer(this, params)
+		var result = VideoPlayer(this, params, callbacks)
 
-		if ($.isFunction(callbacks.success)) callbacks.success(this);
+		$.isFunction(callbacks.success) && callbacks.success(this);
 		
 		return { isHTML5: true, player: result };
 	};
 	
 	$.fn.h264Flash_ = function(params, flparams, callbacks) {
-		var failed = false;
-		var flashvars = flparams.flashvars;
-		flparams.flashvars = null;
+		var result = $.extend(def.noFlashReturn);
+		failed = true;
 		
-		flparams = $.extend({
-			onFail: function() { failed = true; }
-		}, flparams);
+		if (flparams) {
+			failed = false;
+			var flashvars = flparams.flashvars;
+			flparams.flashvars = null;
 		
-		var result = this.flashembed(flparams, flashvars);
+			flparams = $.extend({
+				onFail: function() { failed = true; }
+			}, flparams);
+		
+			var result = this.flashembed(flparams, flashvars);
+		}
 
-		if (failed && $.isFunction(callbacks.failure)) callbacks.failure(this);
-		if (!failed && $.isFunction(callbacks.success)) callbacks.success(this);
+		$.isFunction(callbacks.failure) && callbacks.failure.call(this);
+		$.isFunction(callbacks.success) && callbacks.success.call(this);
 		
 		return { isHTML5: false, player: result };
 	};
@@ -36,7 +41,7 @@
 		
 		params = $.extend(def.params, params);
 		
-		flparams = $.extend(def.flparams, {
+		flparams = flparams && $.extend(def.flparams, {
 			width: params.width,
 			height: params.height
 		}, flparams);
@@ -45,7 +50,7 @@
 		
 		var result = this.h264_(params, flparams, callbacks);
 		
-		if ($.isFunction(callbacks.complete)) callbacks.complete(this);
+		$.isFunction(callbacks.complete) && callbacks.complete.call(this);
 		
 		return result;
 	};

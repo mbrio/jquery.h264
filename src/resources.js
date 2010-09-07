@@ -48,6 +48,10 @@
 			complete: null,
 			success: null,
 			failure: null
+		},
+		noFlashReturn: {
+			isHTML5: false,
+			player: null
 		}
 	}
 

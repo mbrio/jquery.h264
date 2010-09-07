@@ -21,6 +21,7 @@
 				width: 100%;
 				bottom: 0px;
 				border-top: solid 1px #000;
+				display: none;
 			}
 			
 			.jquery-h264-play-button {
@@ -76,6 +77,8 @@
 		</div>
 		
 		<script src='http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js'></script>
+  		<script>!window.jQuery && document.write('<script src="jquery-1.4.2.min.js"><\/script>')</script>
+
 		<script src='../dist/jquery.h264.min.js'></script>
 
 		<script>
@@ -107,6 +110,13 @@
 					/* We add a failure event handler that displays the error message */
 					failure: function() {
 						$("#VideoContainer > .error-message").css('display', 'inline');
+					},
+					videoDisplayed: function() {
+						if (this.hasControls) this.controls.css("visibility", "visible");
+					},
+					update: function() {
+						this.playhead.css("width", this.gutter.width() * this.percentComplete);
+						this.progress.css("width", this.gutter.width() * this.percentLoaded);
 					}
 				};
 				

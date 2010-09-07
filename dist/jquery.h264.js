@@ -1,11 +1,11 @@
 /**
- * jQuery h.264 library 1.0.3
+ * jQuery h.264 library 1.0.4
  * http://github.com/mbrio/jquery.h264
  *
  * Copyright (c) 2010 Michael Diolosa - http://github.com/mbrio
  * Dual-licensed under the GPL and MIT licenses.
  *
- * Date: Mon Sep 6 23:16:10 2010 -0400
+ * Date: Mon Sep 6 23:37:07 2010 -0400
  */
 (function($) {
 
@@ -294,7 +294,7 @@
 		if (JQUERY) {
 		
 			// tools version number
-			jQuery.tools = jQuery.tools || {version: '1.0.3'};
+			jQuery.tools = jQuery.tools || {version: '1.0.4'};
 		
 			jQuery.tools.flashembed = {  
 				conf: GLOBAL_OPTS
@@ -312,7 +312,7 @@
 	// Beginning of the jQuery h.264 code
 	// Create private variables that represent many string values
 	var res = {
-		version: '1.0.3',
+		version: '1.0.4',
 		videoElementName: 'video',
 		divElement: '<div>',
 		videoElement: '<video>',
@@ -359,6 +359,10 @@
 			complete: null,
 			success: null,
 			failure: null
+		},
+		noFlashReturn: {
+			isHTML5: false,
+			player: null
 		}
 	}
 
@@ -370,7 +374,7 @@
 	
 		this.element = ele;
 	
-		init_.call(this, params);
+		init_.call(this, params, callbacks);
 	}
 
 	var useVideoTag_ = function() {
@@ -392,10 +396,10 @@
 	}
 	supportsCustomControls_.cache = null;
 
-	var init_ = function(params) {
-		initVideo_.call(this, params);
+	var init_ = function(params, callbacks) {
+		initVideo_.call(this, params, callbacks);
 		
-		initControls_.call(this, params);
+		initControls_.call(this, params, callbacks);
 
 		this.videoContainer.append(this.controls);
 	
@@ -403,7 +407,7 @@
 		this.element.append(this.videoContainer);
 	}
 
-	var initVideo_ = function(params) {
+	var initVideo_ = function(params, callbacks) {
 		this.videoContainer = $(res.divElement).css({
 			width: params.width,
 			height: params.height,
@@ -424,7 +428,7 @@
 			}).click((function(player) {
 				return function() {
 					$(this).replaceWith(player.video);
-					if (player.hasControls) player.controls.css("visibility", "visible");
+					$.isFunction(callbacks.videoDisplayed) && callbacks.videoDisplayed.call(player);
 					player.play();
 				}
 			})(this)).addClass(res.videoPosterClass).append(play);
@@ -433,7 +437,7 @@
 		this.videoContainer.append(ele);
 	}
 
-	var initControls_ = function(params) {
+	var initControls_ = function(params, callbacks) {
 		this.hasControls = supportsCustomControls_() && (this.controls = this.element.find(res.videoControlsSelector)).size() > 0;
 	
 		if (this.hasControls) {
@@ -458,8 +462,8 @@
 			this.video.bind("ended", $.proxy(displayPaused_, this));
 			
 			this.playButton.click($.proxy(this.togglePlay, this));
-		} else {
-			this.update = new Function();
+			
+			$.isFunction(callbacks.update) && (this.update = callbacks.update);
 		}
 	}
 
@@ -481,10 +485,7 @@
 		this.update();
 	}
 
-	VideoPlayer.prototype.update = function() {
-		this.playhead.css("width", this.gutter.width() * this.percentComplete);
-		this.progress.css("width", this.gutter.width() * this.percentLoaded);
-	}
+	VideoPlayer.prototype.update = new Function();
 
 	VideoPlayer.prototype.togglePlay = function() {
 		if (this.element.hasClass(res.playingClass)) this.pause();
@@ -503,26 +504,31 @@
 	}
 	
 	$.fn.h264HTML5_ = function(params, flparams, callbacks) {
-		var result = VideoPlayer(this, params)
+		var result = VideoPlayer(this, params, callbacks)
 
-		if ($.isFunction(callbacks.success)) callbacks.success(this);
+		$.isFunction(callbacks.success) && callbacks.success(this);
 		
 		return { isHTML5: true, player: result };
 	};
 	
 	$.fn.h264Flash_ = function(params, flparams, callbacks) {
-		var failed = false;
-		var flashvars = flparams.flashvars;
-		flparams.flashvars = null;
+		var result = $.extend(def.noFlashReturn);
+		failed = true;
 		
-		flparams = $.extend({
-			onFail: function() { failed = true; }
-		}, flparams);
+		if (flparams) {
+			failed = false;
+			var flashvars = flparams.flashvars;
+			flparams.flashvars = null;
 		
-		var result = this.flashembed(flparams, flashvars);
+			flparams = $.extend({
+				onFail: function() { failed = true; }
+			}, flparams);
+		
+			var result = this.flashembed(flparams, flashvars);
+		}
 
-		if (failed && $.isFunction(callbacks.failure)) callbacks.failure(this);
-		if (!failed && $.isFunction(callbacks.success)) callbacks.success(this);
+		$.isFunction(callbacks.failure) && callbacks.failure.call(this);
+		$.isFunction(callbacks.success) && callbacks.success.call(this);
 		
 		return { isHTML5: false, player: result };
 	};
@@ -536,7 +542,7 @@
 		
 		params = $.extend(def.params, params);
 		
-		flparams = $.extend(def.flparams, {
+		flparams = flparams && $.extend(def.flparams, {
 			width: params.width,
 			height: params.height
 		}, flparams);
@@ -545,7 +551,7 @@
 		
 		var result = this.h264_(params, flparams, callbacks);
 		
-		if ($.isFunction(callbacks.complete)) callbacks.complete(this);
+		$.isFunction(callbacks.complete) && callbacks.complete.call(this);
 		
 		return result;
 	};

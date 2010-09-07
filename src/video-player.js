@@ -6,7 +6,7 @@
 	
 		this.element = ele;
 	
-		init_.call(this, params);
+		init_.call(this, params, callbacks);
 	}
 
 	var useVideoTag_ = function() {
@@ -28,10 +28,10 @@
 	}
 	supportsCustomControls_.cache = null;
 
-	var init_ = function(params) {
-		initVideo_.call(this, params);
+	var init_ = function(params, callbacks) {
+		initVideo_.call(this, params, callbacks);
 		
-		initControls_.call(this, params);
+		initControls_.call(this, params, callbacks);
 
 		this.videoContainer.append(this.controls);
 	
@@ -39,7 +39,7 @@
 		this.element.append(this.videoContainer);
 	}
 
-	var initVideo_ = function(params) {
+	var initVideo_ = function(params, callbacks) {
 		this.videoContainer = $(res.divElement).css({
 			width: params.width,
 			height: params.height,
@@ -60,7 +60,7 @@
 			}).click((function(player) {
 				return function() {
 					$(this).replaceWith(player.video);
-					if (player.hasControls) player.controls.css("visibility", "visible");
+					$.isFunction(callbacks.videoDisplayed) && callbacks.videoDisplayed.call(player);
 					player.play();
 				}
 			})(this)).addClass(res.videoPosterClass).append(play);
@@ -69,7 +69,7 @@
 		this.videoContainer.append(ele);
 	}
 
-	var initControls_ = function(params) {
+	var initControls_ = function(params, callbacks) {
 		this.hasControls = supportsCustomControls_() && (this.controls = this.element.find(res.videoControlsSelector)).size() > 0;
 	
 		if (this.hasControls) {
@@ -94,8 +94,8 @@
 			this.video.bind("ended", $.proxy(displayPaused_, this));
 			
 			this.playButton.click($.proxy(this.togglePlay, this));
-		} else {
-			this.update = new Function();
+			
+			$.isFunction(callbacks.update) && (this.update = callbacks.update);
 		}
 	}
 
@@ -117,10 +117,7 @@
 		this.update();
 	}
 
-	VideoPlayer.prototype.update = function() {
-		this.playhead.css("width", this.gutter.width() * this.percentComplete);
-		this.progress.css("width", this.gutter.width() * this.percentLoaded);
-	}
+	VideoPlayer.prototype.update = new Function();
 
 	VideoPlayer.prototype.togglePlay = function() {
 		if (this.element.hasClass(res.playingClass)) this.pause();
