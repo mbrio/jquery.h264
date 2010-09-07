@@ -16,7 +16,7 @@
 			<fileset file="js/flashembed.js" />
 			<fileset file="js/resources.js" />
 			<fileset file="js/video-player.js" />
-			<fileset file="js/jquery.h264.js" />
+			<fileset file="js/core.js" />
 			<fileset file="js/outro.js" />
 		</concat>
 		<replaceregexp match="@VERSION" replace="${version}" flags="g" byline="true" file="${OUTPUT}" />

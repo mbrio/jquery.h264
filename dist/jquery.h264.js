@@ -5,7 +5,7 @@
  * Copyright (c) 2010 Michael Diolosa - http://github.com/mbrio
  * Dual-licensed under the GPL and MIT licenses.
  *
- * Date: Mon Sep 6 19:22:02 2010 -0400
+ * Date: Mon Sep 6 22:50:36 2010 -0400
  */
 (function($) {
 

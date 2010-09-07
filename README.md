@@ -37,6 +37,30 @@ To see how this works look at demo/index.html.  The current system supports play
 
 The current control mechanics are in it's infancy and may undergo major revisions.
 
+Build
+-----
+In order to build jQuery h.264 you must have [Ant](http://www.google.com/search?q=apache+ant).
+
+	# ant
+	
+	Buildfile: build.xml
+
+	jquery-h264:
+	     [echo] ./dist/jquery.h264.js built.
+
+	lint:
+	     [exec] JSLint check passed.
+
+	min:
+	    [apply] Applied java to 1 file and 0 directories.
+	   [delete] Deleting: ./dist/tmpmin
+	     [echo] ./dist/jquery.h264.min.js built.
+
+	all:
+
+	BUILD SUCCESSFUL
+	Total time: 2 seconds
+
 Usage
 -----
 jQuery.fn.h264(params, flparams, callbacks)
