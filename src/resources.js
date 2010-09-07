@@ -14,8 +14,8 @@
 		videoControlsSelector: '.jquery-h264-video-controls',
 		videoControlsPlayButtonSelector: '.jquery-h264-play-button',
 		videoControlsGutterSelector: '.jquery-h264-gutter',
-		videoControlsPlayheadSelector: '.jquery-h264-playhead',
-		videoControlsProgressSelector: '.jquery-h264-progress',
+		videoControlsPlayheadSelector: '.jquery-h264-progress',
+		videoControlsProgressSelector: '.jquery-h264-buffer',
 		playingClass: 'playing'
 	}
 

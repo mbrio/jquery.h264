@@ -60,7 +60,7 @@
 			}).click((function(player) {
 				return function() {
 					$(this).replaceWith(player.video);
-					$.isFunction(callbacks.videoDisplayed) && callbacks.videoDisplayed.call(player);
+					$.isFunction(callbacks.posterClicked) && callbacks.posterClicked.call(player);
 					player.play();
 				}
 			})(this)).addClass(res.videoPosterClass).append(play);

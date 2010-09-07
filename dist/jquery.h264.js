@@ -5,7 +5,7 @@
  * Copyright (c) 2010 Michael Diolosa - http://github.com/mbrio
  * Dual-licensed under the GPL and MIT licenses.
  *
- * Date: Tue Sep 7 17:38:54 2010 -0400
+ * Date: Tue Sep 7 17:47:57 2010 -0400
  */
 (function($) {
 
@@ -325,8 +325,8 @@
 		videoControlsSelector: '.jquery-h264-video-controls',
 		videoControlsPlayButtonSelector: '.jquery-h264-play-button',
 		videoControlsGutterSelector: '.jquery-h264-gutter',
-		videoControlsPlayheadSelector: '.jquery-h264-playhead',
-		videoControlsProgressSelector: '.jquery-h264-progress',
+		videoControlsPlayheadSelector: '.jquery-h264-progress',
+		videoControlsProgressSelector: '.jquery-h264-buffer',
 		playingClass: 'playing'
 	}
 
@@ -428,7 +428,7 @@
 			}).click((function(player) {
 				return function() {
 					$(this).replaceWith(player.video);
-					$.isFunction(callbacks.videoDisplayed) && callbacks.videoDisplayed.call(player);
+					$.isFunction(callbacks.posterClicked) && callbacks.posterClicked.call(player);
 					player.play();
 				}
 			})(this)).addClass(res.videoPosterClass).append(play);

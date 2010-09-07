@@ -91,9 +91,11 @@ Parameters
 	* `quality` = The flash quality
 	* `flashvars` = The flashvars to pass onto the flash player
 * `@callbacks` = Functions to call at specific times
-	* `complete` = A callback on complete
-	* `success` = A callback on success
-	* `failure` = A callback on failure
+	* `succeeded` = Executes when either an HTML 5 or Flash video player is embedded, is called within the scope of the jQuery object
+	* `failed` = Executes when both HTML 5 and Flash embedding fail, if flparams is not supplied then the callback is executed when HTML 5 embedding fails; is called within the scope of the jQuery object
+	* `completed` = Executes whether or not there is a success or failure at embedding, is called within the scope of the jQuery object
+	* `videoUpdating` = Executes when video controls should be updated, is called within the scope of the HTML 5 VideoPlayer object
+	* `posterClicked` = Executes when the poster frame is clicked, is called within the scope of the HTML 5 VideoPlayer object
 	
 Returns
 -------

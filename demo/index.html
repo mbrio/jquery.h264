@@ -48,7 +48,7 @@
 				margin: 0 10px 0 33px;
 			}
 			
-			.jquery-h264-playhead, .jquery-h264-progress {
+			.jquery-h264-progress, .jquery-h264-buffer {
 				position: absolute;
 				top: 3px;
 				left: 33px;
@@ -57,7 +57,7 @@
 				width: 1px;
 			}
 			
-			.jquery-h264-progress {
+			.jquery-h264-buffer {
 				background: transparent url(controls/gutter.png) repeat-x 0px -34px;
 			}
 		</style>
@@ -70,8 +70,8 @@
 				<div class="jquery-h264-play-button"></div>
 				<div class="jquery-h264-gutter-container">
 					<div class="jquery-h264-gutter"></div>
+					<div class="jquery-h264-buffer"></div>
 					<div class="jquery-h264-progress"></div>
-					<div class="jquery-h264-playhead"></div>
 				</div>
 			</div>
 		</div>
@@ -109,10 +109,10 @@
 				var callbacks = {
 					/* We add a failure event handler that displays the error message */
 					failed: function() {
-						$("#VideoContainer > .error-message").css('display', 'inline');
+						this.find(".error-message").css('display', 'inline');
 					},
 					
-					videoDisplayed: function() {
+					posterClicked: function() {
 						if (this.hasControls) this.controls.css("visibility", "visible");
 					},
 					
