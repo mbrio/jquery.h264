@@ -1,11 +1,11 @@
 /**
- * jQuery h.264 library 1.3
+ * jQuery h.264 library 1.0.3
  * http://github.com/mbrio/jquery.h264
  *
  * Copyright (c) 2010 Michael Diolosa - http://github.com/mbrio
  * Dual-licensed under the GPL and MIT licenses.
  *
- * Date: Mon Sep 6 23:07:22 2010 -0400
+ * Date: Mon Sep 6 23:14:45 2010 -0400
  */
 (function($) {
 
@@ -294,7 +294,7 @@
 		if (JQUERY) {
 		
 			// tools version number
-			jQuery.tools = jQuery.tools || {version: '1.3'};
+			jQuery.tools = jQuery.tools || {version: '1.0.3'};
 		
 			jQuery.tools.flashembed = {  
 				conf: GLOBAL_OPTS
@@ -309,9 +309,10 @@
 	
 	})();
 
+	// Beginning of the jQuery h.264 code
 	// Create private variables that represent many string values
 	var res = {
-		version: '1.3',
+		version: '1.0.3',
 		videoElementName: 'video',
 		divElement: '<div>',
 		videoElement: '<video>',

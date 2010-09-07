@@ -1,3 +1,4 @@
+	// Beginning of the jQuery h.264 code
 	// Create private variables that represent many string values
 	var res = {
 		version: '@VERSION',
