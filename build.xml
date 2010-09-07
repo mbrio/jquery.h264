@@ -1,0 +1,69 @@
+<project name="jQuery h.264" default="all" basedir=".">
+
+	<loadfile property="version" srcfile="VERSION" />
+	<property name="PREFIX" value="." />
+	<property name="dist" value="${PREFIX}/dist" />
+	
+	<property name="OUTPUT" value="${dist}/jquery.h264.js" />
+	<property name="OUTPUT_MIN" value="${dist}/jquery.h264.min.js" />	
+	
+	<target name="all" depends="jquery-h264,lint,min" />
+
+	<target name="jquery-h264">
+		<mkdir dir="${dist}" />
+		<concat destfile="${OUTPUT}">
+			<fileset file="js/intro.js" />
+			<fileset file="js/flashembed.js" />
+			<fileset file="js/resources.js" />
+			<fileset file="js/video-player.js" />
+			<fileset file="js/jquery.h264.js" />
+			<fileset file="js/outro.js" />
+		</concat>
+		<replaceregexp match="@VERSION" replace="${version}" flags="g" byline="true" file="${OUTPUT}" />
+		<exec executable="git" outputproperty="date">
+			<arg line="log -1 --pretty=format:%ad" />
+		</exec>
+		<replaceregexp match="Date: " replace="Date: ${date}" file="${OUTPUT}" />
+		<echo message="${OUTPUT} built." />
+	</target>
+	
+	<target name="lint" depends="jquery-h264">
+		<exec executable="java">
+			<arg line="-jar build/js.jar build/jslint-check.js" />
+		</exec>
+	</target>
+
+	<target name="min" depends="jquery-h264">
+		<apply executable="java" parallel="false" verbose="true" dest="${dist}">
+			<fileset dir="${dist}">
+				<include name="jquery.h264.js" />
+			</fileset>
+			<arg line="-jar" />
+			<arg path="build/google-compiler-20100616.jar" />
+			<arg value="--warning_level" />
+			<arg value="QUIET" />
+			<arg value="--compilation_level" />
+			<arg value="WHITESPACE_ONLY" />
+			<arg value="--js_output_file" />
+			<targetfile />
+			<arg value="--js" />
+			<mapper type="glob" from="jquery.h264.js" to="tmpmin" />
+		</apply>
+		<concat destfile="${OUTPUT_MIN}">
+			<filelist files="${OUTPUT}, ${dist}/tmpmin" />
+			<filterchain>
+				<headfilter lines="9" />
+			</filterchain>
+		</concat>
+		<concat destfile="${OUTPUT_MIN}" append="yes">
+			<filelist files="${dist}/tmpmin" />
+		</concat>
+		<delete file="${dist}/tmpmin" />
+		<echo message="${OUTPUT_MIN} built." />
+	</target>
+
+	<target name="clean">
+		<delete dir="${dist}" />
+	</target>
+
+</project>
