@@ -5,7 +5,7 @@
  * Copyright (c) 2010 Michael Diolosa - http://github.com/mbrio
  * Dual-licensed under the GPL and MIT licenses.
  *
- * Date: Tue Sep 7 17:47:57 2010 -0400
+ * Date: Tue Sep 7 18:01:42 2010 -0400
  */
 (function($) {
 
@@ -325,8 +325,8 @@
 		videoControlsSelector: '.jquery-h264-video-controls',
 		videoControlsPlayButtonSelector: '.jquery-h264-play-button',
 		videoControlsGutterSelector: '.jquery-h264-gutter',
-		videoControlsPlayheadSelector: '.jquery-h264-progress',
-		videoControlsProgressSelector: '.jquery-h264-buffer',
+		videoControlsProgressSelector: '.jquery-h264-progress',
+		videoControlsBufferSelector: '.jquery-h264-buffer',
 		playingClass: 'playing'
 	}
 
@@ -449,10 +449,8 @@
 		
 			this.playButton = this.controls.find(res.videoControlsPlayButtonSelector);
 			this.gutter = this.controls.find(res.videoControlsGutterSelector);
-			this.playhead = this.controls.find(res.videoControlsPlayheadSelector);
 			this.progress = this.controls.find(res.videoControlsProgressSelector);
-		
-			this.playhead.css("width", 1);
+			this.buffer = this.controls.find(res.videoControlsBufferSelector);
 	
 			this.video.bind("timeupdate", $.proxy(updatePercentComplete_, this));
 			this.video.bind("progress", $.proxy(updatePercentLoaded_, this));

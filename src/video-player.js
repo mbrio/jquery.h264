@@ -81,10 +81,8 @@
 		
 			this.playButton = this.controls.find(res.videoControlsPlayButtonSelector);
 			this.gutter = this.controls.find(res.videoControlsGutterSelector);
-			this.playhead = this.controls.find(res.videoControlsPlayheadSelector);
 			this.progress = this.controls.find(res.videoControlsProgressSelector);
-		
-			this.playhead.css("width", 1);
+			this.buffer = this.controls.find(res.videoControlsBufferSelector);
 	
 			this.video.bind("timeupdate", $.proxy(updatePercentComplete_, this));
 			this.video.bind("progress", $.proxy(updatePercentLoaded_, this));
