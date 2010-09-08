@@ -1,11 +1,11 @@
 /**
- * jQuery h.264 library 1.0.5
+ * jQuery h.264 library 1.0.6
  * http://github.com/mbrio/jquery.h264
  *
  * Copyright (c) 2010 Michael Diolosa - http://github.com/mbrio
  * Dual-licensed under the GPL and MIT licenses.
  *
- * Date: Tue Sep 7 21:56:08 2010 -0400
+ * Date: Tue Sep 7 23:37:22 2010 -0400
  */
 (function($) {
 
@@ -294,7 +294,7 @@
 		if (JQUERY) {
 		
 			// tools version number
-			jQuery.tools = jQuery.tools || {version: '1.0.5'};
+			jQuery.tools = jQuery.tools || {version: '1.0.6'};
 		
 			jQuery.tools.flashembed = {  
 				conf: GLOBAL_OPTS
@@ -312,7 +312,7 @@
 	// Beginning of the jQuery h.264 code
 	// Create private variables that represent many string values
 	var res = {
-		version: '1.0.5',
+		version: '1.0.6',
 		videoElementName: 'video',
 		divElement: '<div>',
 		videoElement: '<video>',
@@ -424,7 +424,7 @@
 			ele = this.posterImage = $(res.divElement).css({
 				width: params.width,
 				height: params.height,
-				background: "transparent url(" + params.poster + ") no-repeat",
+				background: "transparent url(\"" + params.poster + "\") no-repeat",
 				cursor: "pointer",
 				position: "relative"
 			}).click((function(player) {

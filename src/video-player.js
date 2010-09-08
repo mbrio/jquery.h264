@@ -55,7 +55,7 @@
 			ele = this.posterImage = $(res.divElement).css({
 				width: params.width,
 				height: params.height,
-				background: "transparent url(" + params.poster + ") no-repeat",
+				background: "transparent url(\"" + params.poster + "\") no-repeat",
 				cursor: "pointer",
 				position: "relative"
 			}).click((function(player) {
