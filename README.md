@@ -126,6 +126,7 @@ If `isHTML5` is `true` then `player` is an instance of `VideoPlayer` from within
 VideoPlayer API
 ---------------
 **Properties**
+
 * `buffer` - The jQuery object representing the buffer component of the custom controls
 * `controls` - The jQuery object representing the custom controls
 * `element` - The jQuery object representing the embedded player
@@ -139,7 +140,9 @@ VideoPlayer API
 * `video` - The jQuery object representing the video tag
 * `videoContainer` - The jQuery object representing the container of the video tag
 * `videoElement` - The video tag DOM element
+
 **Methods**
+
 * `pause` - Pauses the video playback
 * `play` - Plays a video, you may pass in a video URL in order to play a different video
 * `togglePlay` - Toggles between play and pause
