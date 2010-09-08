@@ -3,10 +3,11 @@
 	
 		this.percentComplete = 0;
 		this.percentLoaded = 0;
+		this.callbacks_ = callbacks;
 	
 		this.element = ele;
 	
-		init_.call(this, params, callbacks);
+		init_.call(this, params);
 	}
 
 	var useVideoTag_ = function() {
@@ -28,10 +29,10 @@
 	}
 	supportsCustomControls_.cache = null;
 
-	var init_ = function(params, callbacks) {
-		initVideo_.call(this, params, callbacks);
+	var init_ = function(params) {
+		initVideo_.call(this, params);
 		
-		initControls_.call(this, params, callbacks);
+		initControls_.call(this, params);
 
 		this.videoContainer.append(this.controls);
 	
@@ -39,7 +40,7 @@
 		this.element.append(this.videoContainer);
 	}
 
-	var initVideo_ = function(params, callbacks) {
+	var initVideo_ = function(params) {
 		this.videoContainer = $(res.divElement).css({
 			width: params.width,
 			height: params.height,
@@ -59,8 +60,6 @@
 				position: "relative"
 			}).click((function(player) {
 				return function() {
-					$(this).replaceWith(player.video);
-					$.isFunction(callbacks.posterClicked) && callbacks.posterClicked.call(player);
 					player.play();
 				}
 			})(this)).addClass(res.videoPosterClass).append(play);
@@ -69,7 +68,7 @@
 		this.videoContainer.append(ele);
 	}
 
-	var initControls_ = function(params, callbacks) {
+	var initControls_ = function(params) {
 		this.hasControls = supportsCustomControls_() && (this.controls = this.element.find(res.videoControlsSelector)).size() > 0;
 	
 		if (this.hasControls) {
@@ -93,7 +92,7 @@
 			
 			this.playButton.click($.proxy(this.togglePlay, this));
 			
-			$.isFunction(callbacks.videoUpdating) && (this.update = callbacks.videoUpdating);
+			$.isFunction(this.callbacks_.videoUpdating) && (this.update = this.callbacks_.videoUpdating);
 		}
 	}
 
@@ -122,9 +121,25 @@
 		else this.play();
 	}
 
-	VideoPlayer.prototype.play = function() {		
-		this.videoElement.play();
-		this.update();
+	VideoPlayer.prototype.play = function(video) {
+		var play = (function(player, video) {
+			return function(video) {
+				if (video && video != player.video.attr('src')) {
+					player.video.attr('src', video);
+				}
+				
+				player.videoElement.play();
+				player.update();
+			}
+		})(this, video);
+
+		if (this.posterImage) {
+			this.posterImage.replaceWith(this.video);
+			$.isFunction(this.callbacks_.posterClicked) && this.callbacks_.posterClicked.call(this);
+		}
+		
+		play(video);
+		this.play = play;
 	}
 
 	VideoPlayer.prototype.pause = function() {

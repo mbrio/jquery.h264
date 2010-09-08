@@ -60,12 +60,20 @@
 			.jquery-h264-buffer {
 				background: transparent url(controls/gutter.png) repeat-x 0px -34px;
 			}
+			
+			.playlist {
+				display: none;
+			}
+			
+			.error-message {
+				display: none;
+			}
 		</style>
 	</head> 
 	<body>
 		
 		<div id="VideoContainer">
-			<span class="error-message" style="display:none">You do not have a version of Flash that supports this video.</span>
+			<span class="error-message">You do not have a browser or a version of Flash that support this video.</span>
 			<div class="jquery-h264-video-controls">
 				<div class="jquery-h264-play-button"></div>
 				<div class="jquery-h264-gutter-container">
@@ -74,6 +82,13 @@
 					<div class="jquery-h264-progress"></div>
 				</div>
 			</div>
+		</div>
+		
+		<div class="playlist">
+			<ol>
+				<li><a href="javascript:void(0)" onclick="window.playVideo('video.m4v')">video 1</a></li>
+				<li><a href="javascript:void(0)" onclick="window.playVideo('video2.m4v')">video 2</a></li>
+			<ol>
 		</div>
 		
 		<script src='http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js'></script>
@@ -131,6 +146,11 @@
 				*/
 				(function(isHTML5, player) {
 					if (isHTML5) {
+						window.playVideo = function(video) {
+							player.play(video);
+						}
+
+						$('.playlist').css("display", "block");
 						player.videoContainer.mouseenter(function() {
 							player.controls.fadeIn(250);
 							player.update();

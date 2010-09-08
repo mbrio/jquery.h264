@@ -23,6 +23,10 @@ In order to get the demo running you'll need an h.264 encoded video, a poster im
 * The poster image should be placed in the root level and named poster.jpg
 * And the Flash JW Player should be placed in the root level and named player.swf
 
+If you'd like to test the playlist capabilities you will need a second video.
+
+* The video should be placed in the root level and named video2.m4v
+
 While jQuery h.264 is not JW Player reliant, the demo is.  You can adjust the demo to test other flash players.
 
 Flash Embedding
@@ -118,3 +122,25 @@ If `isHTML5` is `true` then `player` is an instance of `VideoPlayer` from within
 			// Do some Flash coding here with the results from flashembed
 		}
 	})(player.isHTML5, player.player);
+	
+VideoPlayer API
+---------------
+**Properties**
+* `buffer` - The jQuery object representing the buffer component of the custom controls
+* `controls` - The jQuery object representing the custom controls
+* `element` - The jQuery object representing the embedded player
+* `gutter` - The jQuery object representing the gutter component of the custom controls
+* `hasControls` - Details whether the player has custom controls
+* `percentComplete` - The percent of the video played
+* `percentLoaded` - The percent of the video loaded
+* `playButton` - The jQuery object representing the play button of the custom controls
+* `posterImage` - The jQuery object representing the poster frame
+* `progress` - The jQuery object representing the progress component of the custom controls
+* `video` - The jQuery object representing the video tag
+* `videoContainer` - The jQuery object representing the container of the video tag
+* `videoElement` - The video tag DOM element
+**Methods**
+* `pause` - Pauses the video playback
+* `play` - Plays a video, you may pass in a video URL in order to play a different video
+* `togglePlay` - Toggles between play and pause
+* `update` - Updates the custom controls
