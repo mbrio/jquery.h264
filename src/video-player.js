@@ -82,6 +82,7 @@
 			this.gutter = this.controls.find(res.videoControlsGutterSelector);
 			this.progress = this.controls.find(res.videoControlsProgressSelector);
 			this.buffer = this.controls.find(res.videoControlsBufferSelector);
+			this.playhead = this.controls.find(res.videoControlsPlayheadSelector);
 	
 			this.video.bind("timeupdate", $.proxy(updatePercentComplete_, this));
 			this.video.bind("progress", $.proxy(updatePercentLoaded_, this));
@@ -105,27 +106,48 @@
 	}	
 
 	var updatePercentComplete_ = function() {
-		this.percentComplete = (this.videoElement.currentTime * 100 / this.videoElement.duration) / 100;
+		this.percentComplete = this.videoElement.currentTime / this.videoElement.duration;
 		this.update();
 	}
 
 	var updatePercentLoaded_ = function() {
-		this.percentLoaded = (this.videoElement.buffered.end() * 100 / this.videoElement.duration) / 100;
+		var buffers = this.videoElement.buffered;
+		var total = 0;
+		var length = buffers.length;
+		for (var i = 0; i < length; i++) total += (buffers.end(i) - buffers.start(i));
+		
+		this.percentLoaded = total / this.videoElement.duration;
 		this.update();
 	}
 
 	VideoPlayer.prototype.update = new Function();
 
 	VideoPlayer.prototype.togglePlay = function() {
-		if (this.element.hasClass(res.playingClass)) this.pause();
-		else this.play();
+		if (this.videoElement.paused) this.play();
+		else this.pause();
+	}
+
+	VideoPlayer.prototype.seek = function(time) {
+		var buffers = this.videoElement.buffered;
+		var length = buffers.length;
+		
+		for (var i = 0; i < length; i++) {
+			if (time >= buffers.start(i) && time <= buffers.end(i)) {
+				this.videoElement.currentTime = time;
+				this.play();
+				return true;
+			}
+		}
+		
+		return false;
 	}
 
 	VideoPlayer.prototype.play = function(video) {
 		var play = (function(player, video) {
 			return function(video) {
-				if (video && video != player.video.attr('src')) {
+				if (video) {
 					player.video.attr('src', video);
+					player.videoElement.load();
 				}
 				
 				player.videoElement.play();

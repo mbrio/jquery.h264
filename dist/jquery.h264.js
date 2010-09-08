@@ -1,11 +1,11 @@
 /**
- * jQuery h.264 library 1.0.4
+ * jQuery h.264 library 1.0.5
  * http://github.com/mbrio/jquery.h264
  *
  * Copyright (c) 2010 Michael Diolosa - http://github.com/mbrio
  * Dual-licensed under the GPL and MIT licenses.
  *
- * Date: Tue Sep 7 18:23:57 2010 -0400
+ * Date: Tue Sep 7 21:56:08 2010 -0400
  */
 (function($) {
 
@@ -294,7 +294,7 @@
 		if (JQUERY) {
 		
 			// tools version number
-			jQuery.tools = jQuery.tools || {version: '1.0.4'};
+			jQuery.tools = jQuery.tools || {version: '1.0.5'};
 		
 			jQuery.tools.flashembed = {  
 				conf: GLOBAL_OPTS
@@ -312,7 +312,7 @@
 	// Beginning of the jQuery h.264 code
 	// Create private variables that represent many string values
 	var res = {
-		version: '1.0.4',
+		version: '1.0.5',
 		videoElementName: 'video',
 		divElement: '<div>',
 		videoElement: '<video>',
@@ -327,6 +327,7 @@
 		videoControlsGutterSelector: '.jquery-h264-gutter',
 		videoControlsProgressSelector: '.jquery-h264-progress',
 		videoControlsBufferSelector: '.jquery-h264-buffer',
+		videoControlsPlayheadSelector: '.jquery-h264-playhead',
 		playingClass: 'playing'
 	}
 
@@ -339,8 +340,8 @@
 			autoplay: null,
 			loop: null,
 			controls: 'controls',
-			width: '100%',
-			height: '100%'
+			width: 640,
+			height: 480
 		},
 		flparams: {
 			src: null,
@@ -450,6 +451,7 @@
 			this.gutter = this.controls.find(res.videoControlsGutterSelector);
 			this.progress = this.controls.find(res.videoControlsProgressSelector);
 			this.buffer = this.controls.find(res.videoControlsBufferSelector);
+			this.playhead = this.controls.find(res.videoControlsPlayheadSelector);
 	
 			this.video.bind("timeupdate", $.proxy(updatePercentComplete_, this));
 			this.video.bind("progress", $.proxy(updatePercentLoaded_, this));
@@ -473,27 +475,48 @@
 	}	
 
 	var updatePercentComplete_ = function() {
-		this.percentComplete = (this.videoElement.currentTime * 100 / this.videoElement.duration) / 100;
+		this.percentComplete = this.videoElement.currentTime / this.videoElement.duration;
 		this.update();
 	}
 
 	var updatePercentLoaded_ = function() {
-		this.percentLoaded = (this.videoElement.buffered.end() * 100 / this.videoElement.duration) / 100;
+		var buffers = this.videoElement.buffered;
+		var total = 0;
+		var length = buffers.length;
+		for (var i = 0; i < length; i++) total += (buffers.end(i) - buffers.start(i));
+		
+		this.percentLoaded = total / this.videoElement.duration;
 		this.update();
 	}
 
 	VideoPlayer.prototype.update = new Function();
 
 	VideoPlayer.prototype.togglePlay = function() {
-		if (this.element.hasClass(res.playingClass)) this.pause();
-		else this.play();
+		if (this.videoElement.paused) this.play();
+		else this.pause();
+	}
+
+	VideoPlayer.prototype.seek = function(time) {
+		var buffers = this.videoElement.buffered;
+		var length = buffers.length;
+		
+		for (var i = 0; i < length; i++) {
+			if (time >= buffers.start(i) && time <= buffers.end(i)) {
+				this.videoElement.currentTime = time;
+				this.play();
+				return true;
+			}
+		}
+		
+		return false;
 	}
 
 	VideoPlayer.prototype.play = function(video) {
 		var play = (function(player, video) {
 			return function(video) {
-				if (video && video != player.video.attr('src')) {
+				if (video) {
 					player.video.attr('src', video);
+					player.videoElement.load();
 				}
 				
 				player.videoElement.play();

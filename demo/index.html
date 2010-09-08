@@ -11,7 +11,7 @@
 			.jquery-h264-poster-play {
 				height: 100%;
 				width: 100%;
-				background: transparent url(play.png) no-repeat center center;
+				background: transparent url(controls/posterPlay.png) no-repeat center center;
 			}
 			
 			.jquery-h264-video-controls {
@@ -57,6 +57,15 @@
 				width: 1px;
 			}
 			
+			.jquery-h264-playhead {
+				position: absolute;
+				top: 3px;
+				left: 33px;
+				background: transparent url(controls/playhead.png) no-repeat;
+				height: 17px;
+				width: 15px;
+			}
+			
 			.jquery-h264-buffer {
 				background: transparent url(controls/gutter.png) repeat-x 0px -34px;
 			}
@@ -80,14 +89,15 @@
 					<div class="jquery-h264-gutter"></div>
 					<div class="jquery-h264-buffer"></div>
 					<div class="jquery-h264-progress"></div>
+					<div class="jquery-h264-playhead"></div>
 				</div>
 			</div>
 		</div>
 		
 		<div class="playlist">
 			<ol>
-				<li><a href="javascript:void(0)" onclick="window.playVideo('video.m4v')">video 1</a></li>
-				<li><a href="javascript:void(0)" onclick="window.playVideo('video2.m4v')">video 2</a></li>
+				<li><a href="javascript:void(0)" onclick="window.playVideo['#VideoContainer']('video.m4v')">video 1</a></li>
+				<li><a href="javascript:void(0)" onclick="window.playVideo['#VideoContainer']('video2.m4v')">video 2</a></li>
 			<ol>
 		</div>
 		
@@ -95,7 +105,7 @@
   		<script>!window.jQuery && document.write('<script src="jquery-1.4.2.min.js"><\/script>')</script>
 
 		<script src='../dist/jquery.h264.min.js'></script>
-
+		<script src='controls.js'></script>
 		<script>
 			$(function() {
 				/*
@@ -121,47 +131,11 @@
 					}
 				};
 				
-				var callbacks = {
-					/* We add a failure event handler that displays the error message */
-					failed: function() {
-						this.find(".error-message").css('display', 'inline');
-					},
-					
-					posterClicked: function() {
-						if (this.hasControls) this.controls.css("visibility", "visible");
-					},
-					
-					videoUpdating: function() {
-						this.progress.css("width", this.gutter.width() * this.percentComplete);
-						this.buffer.css("width", this.gutter.width() * this.percentLoaded);
-					}
-				};
-				
-				/* Call h264 and receive an object that describes the results of the embedding */
-				var player = $("#VideoContainer").h264(params, flparams, callbacks);
-				
 				/*
-					Once the player has been created we can add some custom control code,
-					such as fading in and out the controls on mouseenter/mouseleave
+					Call our theme object's init method to instantiate the h.264 video
+					configuration.
 				*/
-				(function(isHTML5, player) {
-					if (isHTML5) {
-						window.playVideo = function(video) {
-							player.play(video);
-						}
-
-						$('.playlist').css("display", "block");
-						player.videoContainer.mouseenter(function() {
-							player.controls.fadeIn(250);
-							player.update();
-						}).mouseleave(function() {
-							player.controls.fadeOut(250);
-							player.update();
-						});
-					} else {
-						// Do some Flash coding here with the results from flashembed
-					}
-				})(player.isHTML5, player.player);
+				var player = mbrio.init("#VideoContainer", params, flparams);
 			});
 		</script> 
 	</body> 

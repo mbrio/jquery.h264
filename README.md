@@ -135,6 +135,7 @@ VideoPlayer API
 * `percentComplete` - The percent of the video played
 * `percentLoaded` - The percent of the video loaded
 * `playButton` - The jQuery object representing the play button of the custom controls
+* `playhead` - The jQuery object representing the playhead of the custom controls
 * `posterImage` - The jQuery object representing the poster frame
 * `progress` - The jQuery object representing the progress component of the custom controls
 * `video` - The jQuery object representing the video tag
@@ -145,5 +146,6 @@ VideoPlayer API
 
 * `pause` - Pauses the video playback
 * `play` - Plays a video, you may pass in a video URL in order to play a different video
+* `seek` - Seeks to a location that is already buffered
 * `togglePlay` - Toggles between play and pause
 * `update` - Updates the custom controls

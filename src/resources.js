@@ -16,6 +16,7 @@
 		videoControlsGutterSelector: '.jquery-h264-gutter',
 		videoControlsProgressSelector: '.jquery-h264-progress',
 		videoControlsBufferSelector: '.jquery-h264-buffer',
+		videoControlsPlayheadSelector: '.jquery-h264-playhead',
 		playingClass: 'playing'
 	}
 
@@ -28,8 +29,8 @@
 			autoplay: null,
 			loop: null,
 			controls: 'controls',
-			width: '100%',
-			height: '100%'
+			width: 640,
+			height: 480
 		},
 		flparams: {
 			src: null,
