@@ -5,6 +5,7 @@
 		videoElementName: 'video',
 		divElement: '<div>',
 		videoElement: '<video>',
+		imgElement: '<img>',
 		customControlQuery: /iphone|ipod|ipad|android/i,
 		h264Type: 'video/mp4; codecs="avc1.42E01E"',
 		videoClass: 'jquery-h264-video',

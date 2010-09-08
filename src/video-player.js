@@ -51,18 +51,34 @@
 		this.videoElement = this.video.get(0);
 	
 		if (supportsCustomControls_() && params.poster && !params.autoplay) {
-			var play = $(res.divElement).addClass(res.videoPosterPlayClass);
+			var play = $(res.divElement).css({
+				width: params.width,
+				height: params.height,
+				position: "absolute",
+				top: 0,
+				left: 0
+			}).addClass(res.videoPosterPlayClass);
+			
+			var poster = $(res.imgElement).attr({
+				width: params.width,
+				height: params.height,
+				src: params.poster
+			}).css({
+				position: "absolute",
+				top: 0,
+				left: 0
+			});
+			
 			ele = this.posterImage = $(res.divElement).css({
 				width: params.width,
 				height: params.height,
-				background: "transparent url(\"" + params.poster + "\") no-repeat",
 				cursor: "pointer",
 				position: "relative"
 			}).click((function(player) {
 				return function() {
 					player.play();
 				}
-			})(this)).addClass(res.videoPosterClass).append(play);
+			})(this)).addClass(res.videoPosterClass).append(poster).append(play);
 		}
 	
 		this.videoContainer.append(ele);
