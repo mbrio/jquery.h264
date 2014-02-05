@@ -283,7 +283,7 @@
 		if (JQUERY) {
 		
 			// tools version number
-			jQuery.tools = jQuery.tools || {version: '@VERSION'};
+			jQuery.tools = jQuery.tools || {version: '1.2.4'};
 		
 			jQuery.tools.flashembed = {  
 				conf: GLOBAL_OPTS

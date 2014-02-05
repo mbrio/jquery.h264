@@ -1,11 +1,11 @@
 /**
- * jQuery h.264 library 1.0.6
+ * jQuery h.264 library 1.0.7
  * http://github.com/mbrio/jquery.h264
  *
  * Copyright (c) 2010 Michael Diolosa - http://github.com/mbrio
  * Dual-licensed under the GPL and MIT licenses.
  *
- * Date: Wed Sep 8 15:22:22 2010 -0400
+ * Date: Wed Sep 8 15:29:02 2010 -0400
  */
 (function($) {
 
@@ -294,7 +294,7 @@
 		if (JQUERY) {
 		
 			// tools version number
-			jQuery.tools = jQuery.tools || {version: '1.0.6'};
+			jQuery.tools = jQuery.tools || {version: '1.2.4'};
 		
 			jQuery.tools.flashembed = {  
 				conf: GLOBAL_OPTS
@@ -309,167 +309,49 @@
 	
 	})();
 
-	// Beginning of the jQuery h.264 code
-	// Create private variables that represent many string values
-	var res = {
-		version: '1.0.6',
-		videoElementName: 'video',
-		divElement: '<div>',
-		videoElement: '<video>',
-		imgElement: '<img>',
-		customControlQuery: /iphone|ipod|ipad|android/i,
-		h264Type: 'video/mp4; codecs="avc1.42E01E"',
-		videoClass: 'jquery-h264-video',
-		videoContainerClass: 'jquery-h264-video-container',
-		videoPosterClass: 'jquery-h264-video-poster',
-		videoPosterPlayClass: 'jquery-h264-poster-play',
-		videoControlsSelector: '.jquery-h264-video-controls',
-		videoControlsPlayButtonSelector: '.jquery-h264-play-button',
-		videoControlsGutterSelector: '.jquery-h264-gutter',
-		videoControlsProgressSelector: '.jquery-h264-progress',
-		videoControlsBufferSelector: '.jquery-h264-buffer',
-		videoControlsPlayheadSelector: '.jquery-h264-playhead',
-		playingClass: 'playing'
-	}
+	// BOTH PLUGINS
+	REGEX_CUSTOM_CONTROL = /iphone|ipod|ipad|android/i;
+	JQUERY_H264_VERSION = '1.0.7';
+		// CONTROLS ONLY
+	CSSCLASS_PLAYING = 'playing';
 
-	// Default objects
-	var def = {
-		params: {
-			src: null,
-			poster: null,
-			preload: 'none',
-			autoplay: null,
-			loop: null,
-			controls: 'controls',
-			width: 640,
-			height: 480
-		},
-		flparams: {
-			src: null,
-			version: [9],
-			expressInstall: null,
-			w3c: false,
-			cachebusting: false,
-			bgcolor: null,
-			wmode: 'opaque',
-			allowfullscreen: true,
-	        allowscriptaccess: 'always',
-			quality: 'high',
-			flashvars: {}
-		},
-		callbacks: {
-			complete: null,
-			success: null,
-			failure: null
-		},
-		noFlashReturn: {
-			isHTML5: false,
-			player: null
-		}
-	}
-
-	var VideoPlayer = function vp(ele, params, callbacks) {
-		if (!(this instanceof arguments.callee)) return new vp(ele, params, callbacks);
-	
-		this.percentComplete = 0;
-		this.percentLoaded = 0;
-		this.callbacks_ = callbacks;
-	
-		this.element = ele;
-	
-		init_.call(this, params);
-	}
-
-	var useVideoTag_ = function() {
-		if (useVideoTag_.cache === null) {
-			var obj = document.createElement(res.videoElementName);
-			useVideoTag_.cache = !!(typeof(obj.canPlayType) !== 'undefined' && obj.canPlayType(res.h264Type));
-		}
-	
-		return useVideoTag_.cache;
-	}
-	useVideoTag_.cache = null;
-
-	var supportsCustomControls_ = function() {
-		if (supportsCustomControls_.cache === null) {
-			supportsCustomControls_.cache = navigator.userAgent.search(res.customControlQuery) === -1;
-		}
-	
-		return supportsCustomControls_.cache;
-	}
-	supportsCustomControls_.cache = null;
-
-	var init_ = function(params) {
-		initVideo_.call(this, params);
+	//window.VideoControls = VideoControls = function vc(ele, video, container) {
+	window.VideoControls = vc = function vc(player) {
+		this.player = player;
+		this.video = player.video;
+		this.element = player.element;
+		this.videoElement = player.videoElement;
+		this.container = player.videoContainer;
 		
-		initControls_.call(this, params);
-
-		this.videoContainer.append(this.controls);
-	
-		this.element.empty();
-		this.element.append(this.videoContainer);
-	}
-
-	var initVideo_ = function(params) {
-		this.videoContainer = $(res.divElement).css({
-			width: params.width,
-			height: params.height,
-			position: 'relative'
-		}).addClass(res.videoContainerClass);
-	
-		var ele = this.video = $(res.videoElement).attr(params).addClass(res.videoClass);
-		this.videoElement = this.video.get(0);
-	
-		if (supportsCustomControls_() && params.poster && !params.autoplay) {
-			var play = $(res.divElement).css({
-				width: params.width,
-				height: params.height,
-				position: "absolute",
-				top: 0,
-				left: 0
-			}).addClass(res.videoPosterPlayClass);
-			
-			var poster = $(res.imgElement).attr({
-				width: params.width,
-				height: params.height,
-				src: params.poster
-			}).css({
-				position: "absolute",
-				top: 0,
-				left: 0
-			});
-			
-			ele = this.posterImage = $(res.divElement).css({
-				width: params.width,
-				height: params.height,
-				cursor: "pointer",
-				position: "relative"
-			}).click((function(player) {
-				return function() {
-					player.play();
-				}
-			})(this)).addClass(res.videoPosterClass).append(poster).append(play);
-		}
-	
-		this.videoContainer.append(ele);
-	}
-
-	var initControls_ = function(params) {
-		this.hasControls = supportsCustomControls_() && (this.controls = this.element.find(res.videoControlsSelector)).size() > 0;
-	
-		if (this.hasControls) {
-			this.controls.remove();
+		console.log(this.hasControls());
 		
-			if (this.posterImage) this.controls.css("visibility", "hidden");
+		if (VideoControls.supportsControls() && this.hasControls()) this.init();
+	}
+	
+	vc.supportsControls = function() {
+		return navigator.userAgent.search(REGEX_CUSTOM_CONTROL) === -1;
+	}
+	
+	vc.prototype.init = function() {
+		initControls_.call(this);
+
+		//this.container.append(this.controls);
+	}
+
+	vc.prototype.hasControls = function() {
+		return false;
+	};
+	
+	vc.prototype.update = new Function();
+	
+	var initControls_ = function() {	
+		//if (this.hasControls) {
+			//this.controls.remove();
+		
+		//	if (this.posterImage) this.controls.css("visibility", "hidden");
 		
 			this.video.attr("controls", null);
-		
-			this.playButton = this.controls.find(res.videoControlsPlayButtonSelector);
-			this.gutter = this.controls.find(res.videoControlsGutterSelector);
-			this.progress = this.controls.find(res.videoControlsProgressSelector);
-			this.buffer = this.controls.find(res.videoControlsBufferSelector);
-			this.playhead = this.controls.find(res.videoControlsPlayheadSelector);
-	
+				
 			this.video.bind("timeupdate", $.proxy(updatePercentComplete_, this));
 			this.video.bind("progress", $.proxy(updatePercentLoaded_, this));
 	
@@ -477,18 +359,20 @@
 			this.video.bind("pause", $.proxy(displayPaused_, this));
 			this.video.bind("ended", $.proxy(displayPaused_, this));
 			
-			this.playButton.click($.proxy(this.togglePlay, this));
+		//	this.playButton.click($.proxy(this.togglePlay, this));
 			
-			$.isFunction(this.callbacks_.videoUpdating) && (this.update = this.callbacks_.videoUpdating);
-		}
+			this.update();
+		//}
 	}
-
+	
 	var displayPlaying_ = function() {
-		this.element.addClass(res.playingClass);
+		this.container.addClass(CSSCLASS_PLAYING);
+		this.update();
 	}
 
 	var displayPaused_ = function() {
-		this.element.removeClass(res.playingClass);
+		this.container.removeClass(CSSCLASS_PLAYING);
+		this.update();
 	}	
 
 	var updatePercentComplete_ = function() {
@@ -505,8 +389,116 @@
 		this.percentLoaded = total / this.videoElement.duration;
 		this.update();
 	}
+	
+	$.videoControls = {
+		version: JQUERY_H264_VERSION
+	}
+		// PLAYER ONLY
+	NAMES_VIDEO_ELEMENT = 'video';
+	ELEMENTS_DIV = '<div>';
+	ELEMENTS_VIDEO = '<video>';
+	ELEMENTS_IMG = '<img>';
 
-	VideoPlayer.prototype.update = new Function();
+	H264_TYPE = 'video/mp4; codecs="avc1.42E01E"';
+
+	CSSCLASS_VIDEO = 'jquery-h264-video';
+	CSSCLASS_VIDEO_CONTAINER = 'jquery-h264-video-container';
+	CSSCLASS_POSTER = 'jquery-h264-video-poster';
+	CSSCALSS_POSTER_PLAY = 'jquery-h264-poster-play';
+	
+	CSS_ABSOLUTE = 'absolute';
+	CSS_RELATIVE = 'relative';
+	CSS_POINTER = 'pointer';
+	
+	UNDEFINED = 'undefined';
+	NONE = 'none';
+	CONTROLS = 'controls'
+	
+	HTML_SRC = 'src';
+
+	// Default objects
+	DEFAULT_PARAMS = {
+		preload: NONE,
+		controls: CONTROLS,
+		width: 640,
+		height: 480
+	}
+	
+	DEFAULT_FLPARAMS = DEFAULT_CALLBACKS = {}
+
+	DEFAULT_NO_FLASH_VALUE = {
+		isHTML5: false
+	}
+
+	window.VideoPlayer = VideoPlayer = function vp(ele, params, callbacks) {	
+		this.percentComplete = 0;
+		this.percentLoaded = 0;
+		this.callbacks_ = callbacks;
+	
+		this.element = ele;
+	
+		init_.call(this, params);
+	}
+
+	VideoPlayer.supportsH264Video = function() {
+		var obj = document.createElement(NAMES_VIDEO_ELEMENT);
+		return typeof(obj.canPlayType) !== UNDEFINED && !!obj.canPlayType(H264_TYPE);
+	}
+	
+	VideoPlayer.supportsPoster = function() {
+		return navigator.userAgent.search(REGEX_CUSTOM_CONTROL) === -1;
+	}
+
+	var init_ = function(params) {
+		this.videoContainer = $(ELEMENTS_DIV).css({
+			width: params.width,
+			height: params.height,
+			position: CSS_RELATIVE
+		}).addClass(CSSCLASS_VIDEO_CONTAINER);
+	
+		if (!!params.autoplay) params.preload = 'auto';
+		
+		var ele = this.video = $(ELEMENTS_VIDEO, params).addClass(CSSCLASS_VIDEO);
+		this.videoElement = this.video.get(0);
+		
+		if (VideoPlayer.supportsPoster() && params.poster && !params.autoplay) {
+			var play = $(ELEMENTS_DIV).css({
+				width: params.width,
+				height: params.height,
+				position: CSS_ABSOLUTE,
+				top: 0,
+				left: 0
+			}).addClass(CSSCALSS_POSTER_PLAY);
+			
+			var poster = $(ELEMENTS_IMG, {
+				width: params.width,
+				height: params.height,
+				src: params.poster
+			}).css({
+				position: CSS_ABSOLUTE,
+				top: 0,
+				left: 0
+			});
+			
+			ele = this.posterImage = $(ELEMENTS_DIV).css({
+				width: params.width,
+				height: params.height,
+				cursor: CSS_POINTER,
+				position: CSS_RELATIVE
+			}).click((function(player) {
+				return function() {
+					player.play();
+				}
+			})(this)).addClass(CSSCLASS_POSTER).append(poster).append(play);
+		}
+		
+		this.controls = new $.h264.controlsClass(this);
+		
+		this.videoContainer.append(ele);
+		
+		this.element.empty();
+		this.element.append(this.videoContainer);
+	}
 
 	VideoPlayer.prototype.togglePlay = function() {
 		if (this.videoElement.paused) this.play();
@@ -532,12 +524,11 @@
 		var play = (function(player, video) {
 			return function(video) {
 				if (video) {
-					player.video.attr('src', video);
+					player.video.attr(HTML_SRC, video);
 					player.videoElement.load();
 				}
 				
 				player.videoElement.play();
-				player.update();
 			}
 		})(this, video);
 
@@ -552,22 +543,16 @@
 
 	VideoPlayer.prototype.pause = function() {
 		this.videoElement.pause();
-		this.update();
-	}
-		$.h264 = {
-		version: res.version
 	}
 	
-	$.fn.h264HTML5_ = function(params, flparams, callbacks) {
-		var result = VideoPlayer(this, params, callbacks)
-
-		$.isFunction(callbacks.succeeded) && callbacks.succeeded.call(this);
-		
-		return { isHTML5: true, player: result };
-	};
+	/* jQuery methods */
+	$.h264 = {
+		version: JQUERY_H264_VERSION,
+		controlsClass: VideoControls
+	}
 	
-	$.fn.h264Flash_ = function(params, flparams, callbacks) {
-		var result = $.extend(def.noFlashReturn);
+	h264_ = function(params, flparams, callbacks) {
+		var result = $.extend(DEFAULT_NO_FLASH_VALUE);
 		failed = true;
 		
 		if (flparams) {
@@ -586,28 +571,36 @@
 		$.isFunction(callbacks.succeeded) && callbacks.succeeded.call(this);
 		
 		return { isHTML5: false, player: result };
-	};
+	}
 	
-	if (useVideoTag_()) $.fn.h264_ = $.fn.h264HTML5_;
-    else $.fn.h264_ = $.fn.h264Flash_;
+	if (VideoPlayer.supportsH264Video()) {
+		h264_ = function(params, flparams, callbacks) {
+			var result = new VideoPlayer(this, params, callbacks)
+
+			$.isFunction(callbacks.succeeded) && callbacks.succeeded.call(this);
+
+			return { isHTML5: true, player: result };
+		}
+	}
 	
 	$.fn.h264 = function(params, flparams, callbacks) {
 		if (!$.isPlainObject(params)) params = { src: params };
 		if (!$.isPlainObject(callbacks)) callbacks = { completed: callbacks };
 		
-		params = $.extend(def.params, params);
+		params = $.extend(DEFAULT_PARAMS, params);
 		
-		flparams = flparams && $.extend(def.flparams, {
+		flparams = flparams && $.extend(DEFAULT_FLPARAMS, {
 			width: params.width,
 			height: params.height
 		}, flparams);
 		
-		callbacks = $.extend(def.callbacks, callbacks);
+		callbacks = $.extend(DEFAULT_CALLBACKS, callbacks);
 		
-		var result = this.h264_(params, flparams, callbacks);
+		var result = h264_.call(this, params, flparams, callbacks);
 		
 		$.isFunction(callbacks.completed) && callbacks.completed.call(this);
 		
 		return result;
-	};
-})(jQuery);
+	}
+
+})(jQuery)

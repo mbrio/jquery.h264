@@ -5,9 +5,9 @@
 	<property name="dist" value="${PREFIX}/dist" />
 	
 	<property name="OUTPUT" value="${dist}/jquery.h264.js" />
-	<property name="OUTPUT_MIN" value="${dist}/jquery.h264.min.js" />	
+	<property name="OUTPUT_MIN" value="${dist}/jquery.h264.min.js" />
 	
-	<target name="all" depends="jquery-h264,lint,min" />
+	<target name="all" depends="jquery-h264,jquery-h264-lint,jquery-h263-min" />
 
 	<target name="jquery-h264">
 		<mkdir dir="${dist}" />
@@ -15,8 +15,8 @@
 			<fileset file="src/intro.js" />
 			<fileset file="src/flashembed.js" />
 			<fileset file="src/resources.js" />
+			<fileset file="src/video-controls.js" />
 			<fileset file="src/video-player.js" />
-			<fileset file="src/core.js" />
 			<fileset file="src/outro.js" />
 		</concat>
 		<replaceregexp match="@VERSION" replace="${version}" flags="g" byline="true" file="${OUTPUT}" />
@@ -27,13 +27,13 @@
 		<echo message="${OUTPUT} built." />
 	</target>
 	
-	<target name="lint" depends="jquery-h264">
+	<target name="jquery-h264-lint" depends="jquery-h264">
 		<exec executable="java">
 			<arg line="-jar build/js.jar build/jslint-check.js" />
 		</exec>
 	</target>
 
-	<target name="min" depends="jquery-h264">
+	<target name="jquery-h263-min" depends="jquery-h264">
 		<apply executable="java" parallel="false" verbose="true" dest="${dist}">
 			<fileset dir="${dist}">
 				<include name="jquery.h264.js" />
@@ -42,8 +42,6 @@
 			<arg path="build/google-compiler-20100616.jar" />
 			<arg value="--warning_level" />
 			<arg value="QUIET" />
-			<arg value="--compilation_level" />
-			<arg value="WHITESPACE_ONLY" />
 			<arg value="--js_output_file" />
 			<targetfile />
 			<arg value="--js" />
